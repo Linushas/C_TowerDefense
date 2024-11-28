@@ -15,6 +15,7 @@ TM initializeTiles(SDL_Renderer* renderer) {
 int loadTiles(TM *tileManager) {
     char *path1 = "res/images/grass.png";
     char *path2 = "res/images/sand.png";
+    char *path3 = "res/images/selected_tile.png";
 
     tileManager->tiles[0].texture = IMG_LoadTexture(tileManager->renderer, path1);
     if (!tileManager->tiles[0].texture) {
@@ -30,7 +31,15 @@ int loadTiles(TM *tileManager) {
         return false;
     }
     printf("%s loaded\n", path2);
-    tileManager->tiles[0].isEnemyPath = true;
+    tileManager->tiles[1].isEnemyPath = true;
+
+    tileManager->tiles[2].texture = IMG_LoadTexture(tileManager->renderer, path3);
+    if (!tileManager->tiles[2].texture) {
+        printf("Failed to load texture: %s\n", IMG_GetError());
+        return false;
+    }
+    printf("%s loaded\n", path3);
+    tileManager->tiles[2].isEnemyPath = false;
 }
 
 int loadMap(char *path, int map[MAP_ROWS][MAP_COLS]) {
@@ -73,6 +82,20 @@ void drawTiles(TM *tileManager) {
             SDL_RenderCopy(tileManager->renderer, texture, NULL, &texture_rect); 
         }
     }
+
+    int mouseX, mouseY;
+    Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
+    tileManager->selectedCol = mouseX / TILESIZE;
+    tileManager->selectedRow = mouseY / TILESIZE;
+    tileManager->selectedTileID = tileManager->tileMap[tileManager->selectedRow][tileManager->selectedCol];
+
+    // draws selected tile if not tile is enemy path
+    if(tileManager->tiles[tileManager->selectedTileID].isEnemyPath == false) {
+        texture = tileManager->tiles[2].texture;
+        SDL_Rect texture_rect = {tileManager->selectedCol*TILESIZE, tileManager->selectedRow*TILESIZE, TILESIZE, TILESIZE};
+        SDL_RenderCopy(tileManager->renderer, texture, NULL, &texture_rect); 
+    }
+    
 }
 
 void cleanupTiles(TM *tileManager) {

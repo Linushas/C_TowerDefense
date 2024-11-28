@@ -4,46 +4,50 @@
 int gameLoop(SDL_Window* win) {
     SDL_Renderer* renderer;
     TM tileManager;
+    TOWERS towers;
     HUD hud;
-    SDL_Event event;
-    int running = loadGame(win, renderer, &tileManager, &hud);
+    SDL_Event* event;
+    int running = loadGame(win, renderer, &tileManager, &towers, &hud);
 
     // MAIN GAME LOOP
     while(running) {
-        if(eventHandler(&event) == QUIT_WINDOW) running = false;
+        while(SDL_PollEvent(event)) {
+            switch(event->type) {
+                case SDL_QUIT: 
+                    running = false; 
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if(tileManager.tiles[tileManager.selectedTileID].isEnemyPath == false)
+                        newTower(&towers, tileManager.selectedCol, tileManager.selectedRow);
+                    break;
+            }
+        }
 
-        render(&tileManager);
+        update(&towers);
+        render(&tileManager, &towers);
 
         SDL_Delay(1000/FPS);
     }
 
-    cleanup(win, renderer, &tileManager);
+    cleanup(win, renderer, &tileManager, &towers, &hud);
     return true;
 }
 
-int eventHandler(SDL_Event *event) {
-    while(SDL_PollEvent(event)) {
-        if(event->type == SDL_QUIT) {
-            return QUIT_WINDOW;
-        }
-    }
-    return NOTHING;
-}
-
-void update() {
+void update(TOWERS *towers) {
 
 }
 
-void render(TM *tileManager) {
+void render(TM *tileManager, TOWERS *towers) {
     SDL_SetRenderDrawColor(tileManager->renderer, 0, 0, 0, 255);
     SDL_RenderClear(tileManager->renderer);
 
     tileManager->draw(tileManager);
+    towers->draw(towers);
 
     SDL_RenderPresent(tileManager->renderer);
 }
 
-int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, HUD *hud) {
+int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud) {
     renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
         printf("Could not create renderer: %s\n", SDL_GetError());
@@ -56,6 +60,12 @@ int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, HUD *hud)
         return false;
     } 
 
+    *towers = initializeTowers(renderer);
+    if(towers == NULL){
+        printf("could not load towers\n");
+        return false;
+    } 
+
     *hud = initializeHUD(renderer);
     if(hud == NULL){
         printf("could not load HUD\n");
@@ -65,8 +75,10 @@ int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, HUD *hud)
     return true;
 }
 
-void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager){
+void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud){
     cleanupTiles(tileManager);
+    cleanupTowers(towers);
+    cleanupHUD(hud);
     SDL_DestroyRenderer(renderer);
     IMG_Quit();
     SDL_DestroyWindow(win);

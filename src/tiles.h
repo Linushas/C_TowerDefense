@@ -18,6 +18,8 @@ typedef struct tile {
 typedef struct tileManager {
     Tile tiles[10];
     int tileMap[MAP_ROWS][MAP_COLS];
+    int selectedCol, selectedRow;
+    int selectedTileID;
     SDL_Renderer* renderer;
     void (*draw)(struct tileManager*);
 } TM;

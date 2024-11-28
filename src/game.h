@@ -2,21 +2,18 @@
 #define GAME_H
 
 #include "tiles.h"
+#include "tower.h"
 #include "headsUpDisplay.h"
 
 #define SCREEN_WIDTH TILESIZE*MAP_COLS
 #define SCREEN_HEIGHT TILESIZE*MAP_ROWS
 #define FPS 60
 
-#define QUIT_WINDOW -1
-enum events{NOTHING};
-
 int gameLoop(SDL_Window* win);
-int eventHandler(SDL_Event *event);
-void update();
-void render(TM *tileManager);
+void update(TOWERS *towers);
+void render(TM *tileManager, TOWERS *towers);
 
-int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, HUD *hud);
-void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager);
+int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud);
+void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud);
 
 #endif
