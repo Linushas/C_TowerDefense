@@ -9,7 +9,7 @@ int gameLoop(SDL_Window* win) {
     HUD hud;
     SDL_Event* event;
     int running = loadGame(win, renderer, &tileManager, &towers, &hud);
-    int money = 1000;
+    hud.money = 1000;
 
     // MAIN GAME LOOP
     while(running) {
@@ -21,7 +21,7 @@ int gameLoop(SDL_Window* win) {
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if(hud.state == NEW_TOWER_STATE) {
-                        updateHUD(&hud, &towers, &tileManager, &money);
+                        updateHUD(&hud, &towers, &tileManager);
                     }
                     else {
                         if(isTower(&towers, tileManager.selectedCol, tileManager.selectedRow)){
