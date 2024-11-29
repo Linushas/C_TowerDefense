@@ -4,7 +4,6 @@
 TM initializeTiles(SDL_Renderer* renderer) {
     TM tileManager;
     tileManager.renderer = renderer;
-    tileManager.draw = drawTiles;
 
     loadTiles(&tileManager);
     loadMap("res/maps/map01.txt", tileManager.tileMap);
@@ -83,19 +82,12 @@ void drawTiles(TM *tileManager) {
         }
     }
 
-    int mouseX, mouseY;
-    Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
-    tileManager->selectedCol = mouseX / TILESIZE;
-    tileManager->selectedRow = mouseY / TILESIZE;
-    tileManager->selectedTileID = tileManager->tileMap[tileManager->selectedRow][tileManager->selectedCol];
-
     // draws selected tile if not tile is enemy path
     if(tileManager->tiles[tileManager->selectedTileID].isEnemyPath == false) {
         texture = tileManager->tiles[2].texture;
         SDL_Rect texture_rect = {tileManager->selectedCol*TILESIZE, tileManager->selectedRow*TILESIZE, TILESIZE, TILESIZE};
         SDL_RenderCopy(tileManager->renderer, texture, NULL, &texture_rect); 
     }
-    
 }
 
 void cleanupTiles(TM *tileManager) {

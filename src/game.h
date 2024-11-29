@@ -10,8 +10,8 @@
 #define FPS 60
 
 int gameLoop(SDL_Window* win);
-void update(TOWERS *towers);
-void render(TM *tileManager, TOWERS *towers);
+void update(TM *tileManager, TOWERS *towers, HUD *hud);
+void render(TM *tileManager, TOWERS *towers, HUD *hud);
 
 int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud);
 void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud);

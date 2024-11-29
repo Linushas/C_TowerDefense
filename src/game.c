@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include "game.h"
 
 int gameLoop(SDL_Window* win) {
@@ -8,23 +9,37 @@ int gameLoop(SDL_Window* win) {
     HUD hud;
     SDL_Event* event;
     int running = loadGame(win, renderer, &tileManager, &towers, &hud);
+    int money = 1000;
 
     // MAIN GAME LOOP
     while(running) {
         while(SDL_PollEvent(event)) {
+
             switch(event->type) {
                 case SDL_QUIT: 
                     running = false; 
                     break;
                 case SDL_MOUSEBUTTONDOWN:
-                    if(tileManager.tiles[tileManager.selectedTileID].isEnemyPath == false)
-                        newTower(&towers, tileManager.selectedCol, tileManager.selectedRow);
-                    break;
+                    if(hud.state == NEW_TOWER_STATE) {
+                        updateHUD(&hud, &towers, &tileManager, &money);
+                    }
+                    else {
+                        if(isTower(&towers, tileManager.selectedCol, tileManager.selectedRow)){
+                            hud.state = UPGRADE_STATE;
+                        }
+                        else {
+                            if(tileManager.tiles[tileManager.selectedTileID].isEnemyPath == false)
+                                hud.state = NEW_TOWER_STATE;
+                            break;
+                        }
+                        
+                    }    
             }
+
         }
 
-        update(&towers);
-        render(&tileManager, &towers);
+        update(&tileManager, &towers, &hud);
+        render(&tileManager, &towers, &hud);
 
         SDL_Delay(1000/FPS);
     }
@@ -33,22 +48,42 @@ int gameLoop(SDL_Window* win) {
     return true;
 }
 
-void update(TOWERS *towers) {
+void update(TM *tileManager, TOWERS *towers, HUD *hud) {
+    int mouseX, mouseY;
+    Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
+    if(hud->state == NEW_TOWER_STATE) {
+        hud->mouseX = mouseX;
+        hud->mouseY = mouseY;
+    }
+    else {
+        tileManager->selectedCol = mouseX / TILESIZE;
+        tileManager->selectedRow = mouseY / TILESIZE;
+        tileManager->selectedTileID = tileManager->tileMap[tileManager->selectedRow][tileManager->selectedCol];
+    }
 
+    for(int i = 0; i < towers->activeTowers; i++){
+        float dx = mouseX - towers->inGame[i].x * TILESIZE;
+        float dy = mouseY - towers->inGame[i].y * TILESIZE;
+        float angle = atan2(dy, dx) * 180 / M_PI;
+        if (angle < 0) angle += 360; 
+        towers->inGame[i].angle = angle + 90.0;
+    }
+    
 }
 
-void render(TM *tileManager, TOWERS *towers) {
-    SDL_SetRenderDrawColor(tileManager->renderer, 0, 0, 0, 255);
+void render(TM *tileManager, TOWERS *towers, HUD *hud) {
     SDL_RenderClear(tileManager->renderer);
 
-    tileManager->draw(tileManager);
-    towers->draw(towers);
+    drawTiles(tileManager);
+    drawTowers(towers);
+    drawHUD(hud, towers);
 
     SDL_RenderPresent(tileManager->renderer);
 }
 
 int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud) {
     renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (!renderer) {
         printf("Could not create renderer: %s\n", SDL_GetError());
         return false;

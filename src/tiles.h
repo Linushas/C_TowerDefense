@@ -6,7 +6,7 @@
 #include <SDL2/SDL_timer.h>
 #include <stdbool.h>
 
-#define TILESIZE 48
+#define TILESIZE 64
 #define MAP_COLS 16
 #define MAP_ROWS 10
 
@@ -21,7 +21,6 @@ typedef struct tileManager {
     int selectedCol, selectedRow;
     int selectedTileID;
     SDL_Renderer* renderer;
-    void (*draw)(struct tileManager*);
 } TM;
 
 TM initializeTiles(SDL_Renderer* renderer);
