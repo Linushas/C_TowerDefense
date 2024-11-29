@@ -3,6 +3,7 @@
 
 #include "tiles.h"
 #include "tower.h"
+#include "enemy.h"
 #include "headsUpDisplay.h"
 
 #define SCREEN_WIDTH TILESIZE*MAP_COLS
@@ -10,10 +11,10 @@
 #define FPS 60
 
 int gameLoop(SDL_Window* win);
-void update(TM *tileManager, TOWERS *towers, HUD *hud);
-void render(TM *tileManager, TOWERS *towers, HUD *hud);
+void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
+void render(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
 
-int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud);
-void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud);
+int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
+void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
 
 #endif

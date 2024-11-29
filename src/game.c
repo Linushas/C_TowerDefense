@@ -6,16 +6,16 @@ int gameLoop(SDL_Window* win) {
     SDL_Renderer* renderer;
     TM tileManager;
     TOWERS towers;
+    EM enemies;
     HUD hud;
-    SDL_Event* event;
-    int running = loadGame(win, renderer, &tileManager, &towers, &hud);
+    SDL_Event event;
+    int running = loadGame(win, renderer, &tileManager, &towers, &enemies, &hud);
     hud.money = 1000;
 
     // MAIN GAME LOOP
     while(running) {
-        while(SDL_PollEvent(event)) {
-
-            switch(event->type) {
+        while(SDL_PollEvent(&event)) {
+            switch(event.type) {
                 case SDL_QUIT: 
                     running = false; 
                     break;
@@ -33,22 +33,22 @@ int gameLoop(SDL_Window* win) {
                             break;
                         }
                         
-                    }    
+                    }
             }
 
         }
-
-        update(&tileManager, &towers, &hud);
-        render(&tileManager, &towers, &hud);
+        
+        update(&tileManager, &towers, &enemies, &hud);
+        render(&tileManager, &towers, &enemies, &hud);
 
         SDL_Delay(1000/FPS);
     }
 
-    cleanup(win, renderer, &tileManager, &towers, &hud);
+    cleanup(win, renderer, &tileManager, &towers, &enemies, &hud);
     return true;
 }
 
-void update(TM *tileManager, TOWERS *towers, HUD *hud) {
+void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
     int mouseX, mouseY;
     Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
     if(hud->state == NEW_TOWER_STATE) {
@@ -69,35 +69,52 @@ void update(TM *tileManager, TOWERS *towers, HUD *hud) {
         towers->inGame[i].angle = angle + 90.0;
     }
     
+    updateEnemies(enemies, tileManager);
+    static int ticks = 0;
+    if(ticks > 100) {
+        ticks = 0;
+        newEnemy(enemies, tileManager, 0*TILESIZE, 3*TILESIZE);
+    }
+    ticks++;
 }
 
-void render(TM *tileManager, TOWERS *towers, HUD *hud) {
+void render(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
     SDL_RenderClear(tileManager->renderer);
 
     drawTiles(tileManager);
     drawTowers(towers);
+    drawEnemies(enemies);
     drawHUD(hud, towers);
 
     SDL_RenderPresent(tileManager->renderer);
 }
 
-int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud) {
+int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
     renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (!renderer) {
         printf("Could not create renderer: %s\n", SDL_GetError());
         return false;
     }
+    printf("Renderer created\n");
 
     *tileManager = initializeTiles(renderer);
     if(tileManager == NULL){
         printf("could not load tiles\n");
         return false;
     } 
+    printf("Tiles initialized\n");
 
     *towers = initializeTowers(renderer);
     if(towers == NULL){
         printf("could not load towers\n");
+        return false;
+    } 
+    printf("Towers initialized\n");
+
+    *enemies = initializeEnemies(renderer);
+    if(enemies == NULL){
+        printf("could not load enemies\n");
         return false;
     } 
 
@@ -106,16 +123,20 @@ int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *t
         printf("could not load HUD\n");
         return false;
     } 
+    printf("HUD initialized\n");
 
     return true;
 }
 
-void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, HUD *hud){
+void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud){
+    printf("cleaning up...\n");
     cleanupTiles(tileManager);
     cleanupTowers(towers);
+    cleanupEnemies(enemies);
     cleanupHUD(hud);
     SDL_DestroyRenderer(renderer);
     IMG_Quit();
     SDL_DestroyWindow(win);
     SDL_Quit();
+    printf("Done!\n");
 }

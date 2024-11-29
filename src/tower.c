@@ -21,7 +21,7 @@ void newTower(TOWERS *towers, int x_pos, int y_pos) {
     }
 
     if(isAvailable) {
-        towers->inGame[towers->activeTowers].angle = 30;
+        towers->inGame[towers->activeTowers].angle = 30.0;
         towers->inGame[towers->activeTowers] = towers->types[0];
         towers->inGame[towers->activeTowers].type = 0;
         towers->inGame[towers->activeTowers].x = x_pos;
