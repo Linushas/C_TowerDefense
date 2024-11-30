@@ -10,7 +10,7 @@ int gameLoop(SDL_Window* win) {
     HUD hud;
     SDL_Event event;
     int running = loadGame(win, renderer, &tileManager, &towers, &enemies, &hud);
-    hud.money = 1000;
+    hud.money = 400;
 
     // MAIN GAME LOOP
     while(running) {
@@ -34,7 +34,10 @@ int gameLoop(SDL_Window* win) {
                         }
                         
                         Enemy* e = isEnemy(&enemies);
-                        if(e != NULL) e->isDead = true;
+                        if(e != NULL){
+                            e->isDead = true;
+                            hud.money++;
+                        } 
                     }
 
                     break;
@@ -67,12 +70,26 @@ void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
 
     updateTowers(towers, enemies);
     updateEnemies(enemies, tileManager);
+
+    for(int enemy = 0; enemy < enemies->activeEnemies; enemy++) {
+        for(int proj = 0; proj < towers->activeTowers; proj++) {
+            if(enemies->inGame[enemy].x >= (int)towers->inGame[proj].proj.x
+            && enemies->inGame[enemy].x <= (int)towers->inGame[proj].proj.x + TILESIZE
+            && enemies->inGame[enemy].y >= (int)towers->inGame[proj].proj.y
+            && enemies->inGame[enemy].y <= (int)towers->inGame[proj].proj.y + TILESIZE 
+            && enemies->inGame[enemy].isDead == false) {
+                enemies->inGame[enemy].isDead = true;
+                hud->money += 10;
+            }
+        }
+    }
 }
 
 void render(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
     SDL_RenderClear(tileManager->renderer);
 
     drawTiles(tileManager);
+    drawProjectiles(towers);
     drawTowers(towers);
     drawEnemies(enemies);
     drawHUD(hud, towers);

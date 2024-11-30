@@ -6,12 +6,20 @@
 
 enum{CANON, SNIPER, FLAMETHROWER};
 
+typedef struct projectile {
+    SDL_Texture *texture;
+    double x, y;
+    double angle;
+    double speed;
+} Projectile;
+
 typedef struct tower {
     SDL_Texture *texture;
     int x, y;
     int type;
     int level;
     double angle;
+    Projectile proj;
 } Tower;
 
 typedef struct towers {
@@ -24,7 +32,9 @@ typedef struct towers {
 TOWERS initializeTowers(SDL_Renderer* renderer);
 void newTower(TOWERS *towers, int x_pos, int y_pos);
 int loadTowers(TOWERS *towers);
+void shoot(Tower *tower);
 void updateTowers(TOWERS *towers, EM *enemies);
+void drawProjectiles(TOWERS *towers);
 void drawTowers(TOWERS *towers);
 bool isTower(TOWERS *towers, int x, int y);
 void cleanupTowers(TOWERS *towers);
