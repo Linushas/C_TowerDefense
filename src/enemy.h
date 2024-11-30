@@ -17,6 +17,7 @@ typedef struct enemy {
     int speed;
     int direction;
     int tilesTraveled;
+    bool isDead;
 } Enemy;
 
 typedef struct enemyManager {
@@ -30,6 +31,7 @@ EM initializeEnemies(SDL_Renderer* renderer);
 void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos);
 int loadEnemies(EM *enemies);
 void updateEnemies(EM *enemies, TM *tileManager);
+Enemy *isEnemy(EM *enemies);
 void drawEnemies(EM *enemies);
 void cleanupEnemies(EM *enemies);
 

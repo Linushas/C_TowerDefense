@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdio.h>
 #include "tower.h"
 
@@ -42,8 +43,21 @@ int loadTowers(TOWERS *towers) {
     printf("%s loaded\n", path1);
 }
 
-void updateTowers(TOWERS *towers) {
+void updateTowers(TOWERS *towers, EM *enemies) {
+    static Enemy targetEnemy;
+    int i = 0;
+    do {
+        targetEnemy = enemies->inGame[i];
+        i++;
+    } while(targetEnemy.isDead);
 
+    for(int i = 0; i < towers->activeTowers; i++){
+        float dx = targetEnemy.x - towers->inGame[i].x * TILESIZE;
+        float dy = targetEnemy.y - towers->inGame[i].y * TILESIZE;
+        float angle = atan2(dy, dx) * 180 / M_PI;
+        if (angle < 0) angle += 360; 
+        towers->inGame[i].angle = angle + 90.0;
+    }
 }
 
 void drawTowers(TOWERS *towers) {

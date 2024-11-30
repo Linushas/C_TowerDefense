@@ -24,16 +24,20 @@ int gameLoop(SDL_Window* win) {
                         updateHUD(&hud, &towers, &tileManager);
                     }
                     else {
+                        
                         if(isTower(&towers, tileManager.selectedCol, tileManager.selectedRow)){
                             hud.state = UPGRADE_STATE;
                         }
                         else {
                             if(tileManager.tiles[tileManager.selectedTileID].isEnemyPath == false)
                                 hud.state = NEW_TOWER_STATE;
-                            break;
                         }
                         
+                        Enemy* e = isEnemy(&enemies);
+                        if(e != NULL) e->isDead = true;
                     }
+
+                    break;
             }
 
         }
@@ -61,21 +65,8 @@ void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
         tileManager->selectedTileID = tileManager->tileMap[tileManager->selectedRow][tileManager->selectedCol];
     }
 
-    for(int i = 0; i < towers->activeTowers; i++){
-        float dx = mouseX - towers->inGame[i].x * TILESIZE;
-        float dy = mouseY - towers->inGame[i].y * TILESIZE;
-        float angle = atan2(dy, dx) * 180 / M_PI;
-        if (angle < 0) angle += 360; 
-        towers->inGame[i].angle = angle + 90.0;
-    }
-    
+    updateTowers(towers, enemies);
     updateEnemies(enemies, tileManager);
-    static int ticks = 0;
-    if(ticks > 100) {
-        ticks = 0;
-        newEnemy(enemies, tileManager, 0*TILESIZE, 3*TILESIZE);
-    }
-    ticks++;
 }
 
 void render(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {

@@ -2,6 +2,7 @@
 #define TOWER_H
 
 #include "tiles.h"
+#include "enemy.h"
 
 enum{CANON, SNIPER, FLAMETHROWER};
 
@@ -23,7 +24,7 @@ typedef struct towers {
 TOWERS initializeTowers(SDL_Renderer* renderer);
 void newTower(TOWERS *towers, int x_pos, int y_pos);
 int loadTowers(TOWERS *towers);
-void updateTowers(TOWERS *towers);
+void updateTowers(TOWERS *towers, EM *enemies);
 void drawTowers(TOWERS *towers);
 bool isTower(TOWERS *towers, int x, int y);
 void cleanupTowers(TOWERS *towers);
