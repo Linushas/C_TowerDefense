@@ -22,8 +22,8 @@ void newTower(TOWERS *towers, int x_pos, int y_pos) {
     }
 
     if(isAvailable) {
-        towers->inGame[towers->activeTowers].angle = 30.0;
         towers->inGame[towers->activeTowers] = towers->types[0];
+        towers->inGame[towers->activeTowers].angle = 30.0;
         towers->inGame[towers->activeTowers].type = 0;
         towers->inGame[towers->activeTowers].x = x_pos;
         towers->inGame[towers->activeTowers].y = y_pos;
@@ -38,38 +38,65 @@ void newTower(TOWERS *towers, int x_pos, int y_pos) {
 }
 
 int loadTowers(TOWERS *towers) {
-    char *path1 = "res/images/tower1.png";
-    char *path2 = "res/images/projectile1.png";
-    char *path3 = "res/images/tower1shoot.png";
-    char *path4 = "res/images/tower1lv2.png";
+    char *path = "res/images/tower01.png";
+    char *pathProjectile = "res/images/projectile1.png";
 
-    towers->types[0].texture[0] = IMG_LoadTexture(towers->renderer, path1);
-    if (!towers->types[0].texture[0]) {
+    SDL_Texture *sheet = IMG_LoadTexture(towers->renderer, path);
+    if (!sheet) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
-    printf("%s loaded\n", path1);
+    printf("%s loaded\n", path);
 
-    towers->types[0].texture[2] = IMG_LoadTexture(towers->renderer, path3);
-    if (!towers->types[0].texture[2]) {
+    int rows = 5, cols = 2;
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int spriteIndex = i * cols + j;
+            if (spriteIndex >= 50) {
+                break;
+            }
+
+            SDL_Rect cropRect = {j * 32, i * 32, 32, 32};
+            towers->types[0].texture[spriteIndex] = SDL_CreateTexture(
+                towers->renderer,
+                SDL_PIXELFORMAT_RGBA8888,
+                SDL_TEXTUREACCESS_TARGET,
+                TILESIZE,
+                TILESIZE
+            );
+            if (!towers->types[0].texture[spriteIndex]) {
+                printf("Failed to create tile texture: %s\n", SDL_GetError());
+                SDL_DestroyTexture(sheet);
+                return false;
+            }
+            
+            SDL_SetRenderTarget(towers->renderer, towers->types[0].texture[spriteIndex]);
+            SDL_SetTextureBlendMode(towers->types[0].texture[spriteIndex], SDL_BLENDMODE_BLEND);
+
+            if (SDL_RenderCopy(towers->renderer, sheet, &cropRect, NULL) < 0) {
+                printf("Failed to render copy tile: %s\n", SDL_GetError());
+                SDL_DestroyTexture(sheet);
+                return false;
+            }
+
+            SDL_SetRenderTarget(towers->renderer, NULL);
+
+            if (!towers->types[0].texture[spriteIndex]) {
+                printf("Texture creation failed at sprite %d: %s\n", spriteIndex, SDL_GetError());
+            }
+
+        }
+    }
+
+    SDL_DestroyTexture(sheet);
+
+    towers->types[0].projTexture = IMG_LoadTexture(towers->renderer, pathProjectile);
+    if (!sheet) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
-    printf("%s loaded\n", path3);
-
-    towers->types[0].texture[1] = IMG_LoadTexture(towers->renderer, path4);
-    if (!towers->types[0].texture[1]) {
-        printf("Failed to load texture: %s\n", IMG_GetError());
-        return false;
-    }
-    printf("%s loaded\n", path4);
-
-    towers->types[0].projTexture = IMG_LoadTexture(towers->renderer, path2);
-    if (!towers->types[0].projTexture) {
-        printf("Failed to load texture: %s\n", IMG_GetError());
-        return false;
-    }
-    printf("%s loaded\n", path2);
+    printf("%s loaded\n", pathProjectile);
 }
 
 void shoot(Tower *tower) {
@@ -102,6 +129,13 @@ void updateTowers(TOWERS *towers, EM *enemies) {
             towers->inGame[i].timer = 0;
             shoot(&towers->inGame[i]);
         }  
+        if(towers->inGame[i].timer > towers->inGame[i].reloadDelay * 2/3) {
+            towers->inGame[i].spriteState = towers->inGame[i].level*2 - 1;
+        }
+        else {
+            towers->inGame[i].spriteState = towers->inGame[i].level*2 - 2;
+        }
+        
         (towers->inGame[i].timer)++;
     }
 

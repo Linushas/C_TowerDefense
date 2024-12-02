@@ -11,7 +11,7 @@ typedef struct projectile {
 } Projectile;
 
 typedef struct tower {
-    SDL_Texture *texture[10];
+    SDL_Texture *texture[20];
     SDL_Texture *projTexture;
     int spriteState;
     char *name;
