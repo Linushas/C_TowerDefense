@@ -29,6 +29,9 @@ void newTower(TOWERS *towers, int x_pos, int y_pos) {
         towers->inGame[towers->activeTowers].y = y_pos;
         towers->inGame[towers->activeTowers].level = 1;
         towers->inGame[towers->activeTowers].projIndex = 0;
+        towers->inGame[towers->activeTowers].projSpeed = 120;
+        towers->inGame[towers->activeTowers].timer = 0;
+        towers->inGame[towers->activeTowers].reloadDelay = 30;
         towers->inGame[towers->activeTowers].spriteState = 0;
         (towers->activeTowers)++;
     }
@@ -71,7 +74,6 @@ int loadTowers(TOWERS *towers) {
 
 void shoot(Tower *tower) {
     if(tower->projIndex >= 10) tower->projIndex = 0;
-    tower->proj[tower->projIndex].speed = 120;
     tower->proj[tower->projIndex].x = (double)tower->x * TILESIZE;
     tower->proj[tower->projIndex].y = (double)tower->y * TILESIZE;
     tower->proj[tower->projIndex].angle = tower->angle;
@@ -95,22 +97,17 @@ void updateTowers(TOWERS *towers, EM *enemies) {
         towers->inGame[i].angle = angle;
     }
 
-    static int ticks = 0;
-    if(ticks > 30) {
-        ticks = 0;
-        for(int i = 0; i < towers->activeTowers; i++) {
-            shoot(&towers->inGame[i]);
-        }
-    }
     for(int i = 0; i < towers->activeTowers; i++) {
-    if(ticks > 20) towers->inGame[i].spriteState = towers->inGame[i].level - 1;
-        else towers->inGame[i].spriteState = towers->inGame[i].level - 1;    
+        if(towers->inGame[i].timer > towers->inGame[i].reloadDelay) {
+            towers->inGame[i].timer = 0;
+            shoot(&towers->inGame[i]);
+        }  
+        (towers->inGame[i].timer)++;
     }
-    ticks++;
 
     for(int i = 0; i < towers->activeTowers; i++) {
         for(int p = 0; p < towers->inGame[i].projIndex; p++) {
-            int speed = towers->inGame[i].proj[p].speed;
+            int speed = towers->inGame[i].projSpeed;
             double angle = (towers->inGame[i].proj[p].angle) / (180 / M_PI);
             towers->inGame[i].proj[p].x += speed * cos(angle) * 0.1;
             towers->inGame[i].proj[p].y += speed * sin(angle) * 0.1;
@@ -119,7 +116,21 @@ void updateTowers(TOWERS *towers, EM *enemies) {
 }
 
 void upgradeTower(Tower *tower) {
-    
+    (tower->level)++;
+    switch(tower->level) {
+        case 1: 
+            tower->projSpeed = 120;
+            tower->reloadDelay = 30;
+            break;
+        case 2: 
+            tower->projSpeed = 120;
+            tower->reloadDelay = 15;
+            break;
+        case 2: 
+            tower->projSpeed = 120;
+            tower->reloadDelay = 25;
+            break;
+    }
 }
 
 void drawProjectiles(TOWERS *towers) {
