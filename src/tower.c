@@ -67,6 +67,7 @@ void shoot(Tower *tower) {
     tower->proj[tower->projIndex].x = (double)tower->x * TILESIZE;
     tower->proj[tower->projIndex].y = (double)tower->y * TILESIZE;
     tower->proj[tower->projIndex].angle = tower->angle;
+    tower->proj[tower->projIndex].enemiesHit = 0;
     (tower->projIndex)++;
 }
 
@@ -114,9 +115,11 @@ void drawProjectiles(TOWERS *towers) {
 
     for(int i = 0; i < towers->activeTowers; i++) {
         for(int p = 0; p < towers->inGame[i].projIndex; p++) {
-            texture = towers->inGame[i].projTexture;
-            SDL_Rect texture_rect = {(int)towers->inGame[i].proj[p].x, (int)towers->inGame[i].proj[p].y, TILESIZE, TILESIZE};
-            SDL_RenderCopyEx(towers->renderer, texture, NULL, &texture_rect, towers->inGame[i].proj[p].angle, NULL, SDL_FLIP_NONE);
+            if(towers->inGame[i].proj[p].enemiesHit == 0) {
+                texture = towers->inGame[i].projTexture;
+                SDL_Rect texture_rect = {(int)towers->inGame[i].proj[p].x, (int)towers->inGame[i].proj[p].y, TILESIZE, TILESIZE};
+                SDL_RenderCopyEx(towers->renderer, texture, NULL, &texture_rect, towers->inGame[i].proj[p].angle, NULL, SDL_FLIP_NONE);
+            }
         }
     }
 }

@@ -24,7 +24,6 @@ int gameLoop(SDL_Window* win) {
                         updateHUD(&hud, &towers, &tileManager);
                     }
                     else {
-                        
                         if(isTower(&towers, tileManager.selectedCol, tileManager.selectedRow)){
                             hud.state = UPGRADE_STATE;
                         }
@@ -32,12 +31,6 @@ int gameLoop(SDL_Window* win) {
                             if(tileManager.tiles[tileManager.selectedTileID].isEnemyPath == false)
                                 hud.state = NEW_TOWER_STATE;
                         }
-                        
-                        Enemy* e = isEnemy(&enemies);
-                        if(e != NULL){
-                            e->isDead = true;
-                            hud.money++;
-                        } 
                     }
 
                     break;
@@ -79,8 +72,14 @@ void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
                 && enemies->inGame[enemy].y >= (int)towers->inGame[i].proj[p].y
                 && enemies->inGame[enemy].y <= (int)towers->inGame[i].proj[p].y + TILESIZE 
                 && enemies->inGame[enemy].isDead == false) {
-                    enemies->inGame[enemy].isDead = true;
-                    hud->money += 10;
+                    if(towers->inGame[i].proj[p].enemiesHit == 0) {
+                        (enemies->inGame[enemy].hp)--;
+                    }
+                    (towers->inGame[i].proj[p].enemiesHit)++;
+                    if(enemies->inGame[enemy].hp <= 0) {
+                        enemies->inGame[enemy].isDead = true;
+                        hud->money += 10;
+                    }
                 }
             }
             

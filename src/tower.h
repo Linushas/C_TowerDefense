@@ -8,6 +8,7 @@ typedef struct projectile {
     double x, y;
     double angle;
     double speed;
+    int enemiesHit;
 } Projectile;
 
 typedef struct tower {
@@ -17,6 +18,7 @@ typedef struct tower {
     int x, y;
     int type;
     int level;
+    int price;
     double angle;
     Projectile proj[10];
     int projIndex;

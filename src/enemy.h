@@ -17,10 +17,12 @@ typedef struct enemy {
     int speed;
     int direction;
     int tilesTraveled;
+    int hp;
     bool isDead;
 } Enemy;
 
 typedef struct enemyManager {
+    SDL_Texture *lowHPTexture;
     Enemy types[10];
     Enemy inGame[50];
     int activeEnemies;

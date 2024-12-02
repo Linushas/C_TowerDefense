@@ -30,12 +30,14 @@ void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos) {
     enemies->inGame[enemies->activeEnemies].y = y_pos;
     enemies->inGame[enemies->activeEnemies].y = y_pos;
     enemies->inGame[enemies->activeEnemies].tilesTraveled = 0;
+    enemies->inGame[enemies->activeEnemies].hp = 4;
 
     (enemies->activeEnemies)++;
 }
 
 int loadEnemies(EM *enemies) {
     char *path1 = "res/images/enemy1.png";
+    char *path2 = "res/images/enemy1pop.png";
 
     enemies->types[0].texture = IMG_LoadTexture(enemies->renderer, path1);
     if (!enemies->types[0].texture) {
@@ -43,12 +45,16 @@ int loadEnemies(EM *enemies) {
         return false;
     }
     printf("%s loaded\n", path1);
+
+    enemies->lowHPTexture = IMG_LoadTexture(enemies->renderer, path2);
+    if (!enemies->lowHPTexture) {
+        printf("Failed to load texture: %s\n", IMG_GetError());
+        return false;
+    }
+    printf("%s loaded\n", path2);
 }
 
 void updateEnemies(EM *enemies, TM *tileManager) {
-    int pathX[34] = {0, 1, 2, 2, 2, 3, 4, 4, 4, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 13, 12, 11, 10, 10, 10, 10, 10, 10, 11, 12, 13, 14, 15};
-    int pathY[34] = {3, 3, 3, 2, 1, 1, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 2, 2, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7};
-
     for (int i = 0; i < enemies->activeEnemies; i++) {
         Enemy *enemy = &enemies->inGame[i];
 
@@ -115,8 +121,6 @@ void updateEnemies(EM *enemies, TM *tileManager) {
                 enemy->x += enemy->speed;
                 break;
         }
-
-        
     }
 
     static int ticks = 0;
@@ -142,7 +146,6 @@ Enemy *isEnemy(EM *enemies) {
     return NULL;
 }
 
-
 void drawEnemies(EM *enemies) {
     SDL_Texture *texture;
 
@@ -151,8 +154,13 @@ void drawEnemies(EM *enemies) {
             texture = enemies->inGame[i].texture;
             SDL_Rect texture_rect = {enemies->inGame[i].x, enemies->inGame[i].y, TILESIZE, TILESIZE};
             SDL_RenderCopy(enemies->renderer, texture, NULL, &texture_rect); 
+
+            if(enemies->inGame[i].hp <= 2) {
+                texture = enemies->lowHPTexture;
+                SDL_Rect texture_rect = {enemies->inGame[i].x, enemies->inGame[i].y, TILESIZE, TILESIZE};
+                SDL_RenderCopy(enemies->renderer, texture, NULL, &texture_rect); 
+            }
         }
-        
     }
 }
 
