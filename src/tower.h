@@ -4,22 +4,22 @@
 #include "tiles.h"
 #include "enemy.h"
 
-enum{CANON, SNIPER, FLAMETHROWER};
-
 typedef struct projectile {
-    SDL_Texture *texture;
     double x, y;
     double angle;
     double speed;
 } Projectile;
 
 typedef struct tower {
-    SDL_Texture *texture;
+    SDL_Texture *texture[10];
+    SDL_Texture *projTexture;
+    int spriteState;
     int x, y;
     int type;
     int level;
     double angle;
-    Projectile proj;
+    Projectile proj[10];
+    int projIndex;
 } Tower;
 
 typedef struct towers {

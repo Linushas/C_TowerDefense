@@ -72,15 +72,18 @@ void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
     updateEnemies(enemies, tileManager);
 
     for(int enemy = 0; enemy < enemies->activeEnemies; enemy++) {
-        for(int proj = 0; proj < towers->activeTowers; proj++) {
-            if(enemies->inGame[enemy].x >= (int)towers->inGame[proj].proj.x
-            && enemies->inGame[enemy].x <= (int)towers->inGame[proj].proj.x + TILESIZE
-            && enemies->inGame[enemy].y >= (int)towers->inGame[proj].proj.y
-            && enemies->inGame[enemy].y <= (int)towers->inGame[proj].proj.y + TILESIZE 
-            && enemies->inGame[enemy].isDead == false) {
-                enemies->inGame[enemy].isDead = true;
-                hud->money += 10;
+        for(int i = 0; i < towers->activeTowers; i++) {
+            for(int p = 0; p < towers->inGame[i].projIndex; p++){
+                if(enemies->inGame[enemy].x >= (int)towers->inGame[i].proj[p].x
+                && enemies->inGame[enemy].x <= (int)towers->inGame[i].proj[p].x + TILESIZE
+                && enemies->inGame[enemy].y >= (int)towers->inGame[i].proj[p].y
+                && enemies->inGame[enemy].y <= (int)towers->inGame[i].proj[p].y + TILESIZE 
+                && enemies->inGame[enemy].isDead == false) {
+                    enemies->inGame[enemy].isDead = true;
+                    hud->money += 10;
+                }
             }
+            
         }
     }
 }

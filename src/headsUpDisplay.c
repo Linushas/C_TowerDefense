@@ -34,7 +34,7 @@ void drawHUD(HUD *hud, TOWERS *towers){
         SDL_SetRenderDrawColor(hud->renderer, 0, 0, 0, 200);
         SDL_RenderFillRect(hud->renderer, &rect);
         
-        texture = towers->types[0].texture;
+        texture = towers->types[0].texture[0];
         SDL_Rect texture_rect = {SCREEN_WIDTH-180, 50, TILESIZE, TILESIZE};
         SDL_RenderCopy(hud->renderer, texture, NULL, &texture_rect); 
 
