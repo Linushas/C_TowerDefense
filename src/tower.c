@@ -95,7 +95,7 @@ void updateTowers(TOWERS *towers, EM *enemies) {
         }
     }
     for(int i = 0; i < towers->activeTowers; i++) {
-        if(ticks > 20) towers->inGame[i].spriteState = 1;
+        if(ticks > 20) towers->inGame[i].spriteState = 0;
         else towers->inGame[i].spriteState = 0;    
     }
     ticks++;
