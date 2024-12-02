@@ -88,6 +88,7 @@ void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
 }
 
 void render(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
+    SDL_SetRenderDrawColor(tileManager->renderer, 0, 0, 0, 0);
     SDL_RenderClear(tileManager->renderer);
 
     drawTiles(tileManager);

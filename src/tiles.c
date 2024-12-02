@@ -52,8 +52,9 @@ int loadTiles(TM *tileManager) {
                 SDL_DestroyTexture(sheet);
                 return false;
             }
-
+            
             SDL_SetRenderTarget(tileManager->renderer, tileManager->tiles[tileIndex].texture);
+            SDL_SetTextureBlendMode(tileManager->tiles[tileIndex].texture, SDL_BLENDMODE_BLEND);
 
             if (SDL_RenderCopy(tileManager->renderer, sheet, &cropRect, NULL) < 0) {
                 printf("Failed to render copy tile: %s\n", SDL_GetError());
@@ -130,7 +131,7 @@ void drawTiles(TM *tileManager) {
 
     // draws selected tile if not tile is enemy path
     if(tileManager->tiles[tileManager->selectedTileID].isEnemyPath == false) {
-        texture = tileManager->tiles[2].texture;
+        texture = tileManager->tiles[49].texture;
         SDL_Rect texture_rect = {tileManager->selectedCol*TILESIZE, tileManager->selectedRow*TILESIZE, TILESIZE, TILESIZE};
         SDL_RenderCopy(tileManager->renderer, texture, NULL, &texture_rect); 
     }
