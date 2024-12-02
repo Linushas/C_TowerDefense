@@ -126,7 +126,7 @@ void updateEnemies(EM *enemies, TM *tileManager) {
     static int ticks = 0;
     if(ticks > 100) {
         ticks = 0;
-        if(enemies->activeEnemies < 40)
+        if(enemies->activeEnemies < 50)
             newEnemy(enemies, tileManager, 0*TILESIZE, 3*TILESIZE);
     }
     ticks++;

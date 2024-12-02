@@ -47,6 +47,8 @@ void drawHUD(HUD *hud, TOWERS *towers){
         SDL_RenderFillRect(hud->renderer, &rect);
 
         renderText(hud, "lvl 1 Turret", SCREEN_WIDTH-180, 70, sans, fontColor);
+
+        towers->inGame[0].level = 2;
     }
 
     char string[60];

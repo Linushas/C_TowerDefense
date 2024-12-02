@@ -38,6 +38,7 @@ int loadTowers(TOWERS *towers) {
     char *path1 = "res/images/tower1.png";
     char *path2 = "res/images/projectile1.png";
     char *path3 = "res/images/tower1shoot.png";
+    char *path4 = "res/images/tower1lv2.png";
 
     towers->types[0].texture[0] = IMG_LoadTexture(towers->renderer, path1);
     if (!towers->types[0].texture[0]) {
@@ -46,12 +47,19 @@ int loadTowers(TOWERS *towers) {
     }
     printf("%s loaded\n", path1);
 
-    towers->types[0].texture[1] = IMG_LoadTexture(towers->renderer, path3);
-    if (!towers->types[0].texture[1]) {
+    towers->types[0].texture[2] = IMG_LoadTexture(towers->renderer, path3);
+    if (!towers->types[0].texture[2]) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
     printf("%s loaded\n", path3);
+
+    towers->types[0].texture[1] = IMG_LoadTexture(towers->renderer, path4);
+    if (!towers->types[0].texture[1]) {
+        printf("Failed to load texture: %s\n", IMG_GetError());
+        return false;
+    }
+    printf("%s loaded\n", path4);
 
     towers->types[0].projTexture = IMG_LoadTexture(towers->renderer, path2);
     if (!towers->types[0].projTexture) {
@@ -95,8 +103,8 @@ void updateTowers(TOWERS *towers, EM *enemies) {
         }
     }
     for(int i = 0; i < towers->activeTowers; i++) {
-        if(ticks > 20) towers->inGame[i].spriteState = 0;
-        else towers->inGame[i].spriteState = 0;    
+    if(ticks > 20) towers->inGame[i].spriteState = towers->inGame[i].level - 1;
+        else towers->inGame[i].spriteState = towers->inGame[i].level - 1;    
     }
     ticks++;
 
@@ -108,6 +116,10 @@ void updateTowers(TOWERS *towers, EM *enemies) {
             towers->inGame[i].proj[p].y += speed * sin(angle) * 0.1;
         }
     }
+}
+
+void upgradeTower(Tower *tower) {
+    
 }
 
 void drawProjectiles(TOWERS *towers) {

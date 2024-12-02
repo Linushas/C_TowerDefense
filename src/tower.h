@@ -22,6 +22,8 @@ typedef struct tower {
     double angle;
     Projectile proj[10];
     int projIndex;
+    double projSpeed;
+    int reloadDelay;
 } Tower;
 
 typedef struct towers {
@@ -36,6 +38,7 @@ void newTower(TOWERS *towers, int x_pos, int y_pos);
 int loadTowers(TOWERS *towers);
 void shoot(Tower *tower);
 void updateTowers(TOWERS *towers, EM *enemies);
+void upgradeTower(Tower *tower);
 void drawProjectiles(TOWERS *towers);
 void drawTowers(TOWERS *towers);
 bool isTower(TOWERS *towers, int x, int y);
