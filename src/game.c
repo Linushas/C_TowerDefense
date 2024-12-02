@@ -20,19 +20,19 @@ int gameLoop(SDL_Window* win) {
                     running = false; 
                     break;
                 case SDL_MOUSEBUTTONDOWN:
-                    if(hud.state == NEW_TOWER_STATE) {
+                    if(hud.state == UPGRADE_STATE || hud.state == NEW_TOWER_STATE) {
                         updateHUD(&hud, &towers, &tileManager);
                     }
                     else {
-                        if(isTower(&towers, tileManager.selectedCol, tileManager.selectedRow)){
+                        towers.selectedTowerIndex = isTower(&towers, tileManager.selectedCol, tileManager.selectedRow);
+                        if(towers.selectedTowerIndex != -1) {
                             hud.state = UPGRADE_STATE;
                         }
-                        else {
-                            if(tileManager.tiles[tileManager.selectedTileID].isEnemyPath == false)
-                                hud.state = NEW_TOWER_STATE;
+                        else if(tileManager.tiles[tileManager.selectedTileID].isEnemyPath == false) {
+                            hud.state = NEW_TOWER_STATE;
                         }
                     }
-
+                    
                     break;
             }
 
@@ -51,7 +51,7 @@ int gameLoop(SDL_Window* win) {
 void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
     int mouseX, mouseY;
     Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
-    if(hud->state == NEW_TOWER_STATE) {
+    if(hud->state == NEW_TOWER_STATE || hud->state == UPGRADE_STATE) {
         hud->mouseX = mouseX;
         hud->mouseY = mouseY;
     }

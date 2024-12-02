@@ -126,7 +126,7 @@ void upgradeTower(Tower *tower) {
             tower->projSpeed = 120;
             tower->reloadDelay = 15;
             break;
-        case 2: 
+        case 3: 
             tower->projSpeed = 120;
             tower->reloadDelay = 25;
             break;
@@ -158,12 +158,12 @@ void drawTowers(TOWERS *towers) {
     }
 }
 
-bool isTower(TOWERS *towers, int x, int y) {
+int isTower(TOWERS *towers, int x, int y) {
     for(int i = 0; i < towers->activeTowers; i++) {
         if(towers->inGame[i].x == x && towers->inGame[i].y == y)
-            return true;
+            return i;
     }
-    return false;
+    return -1;
 }
 
 void cleanupTowers(TOWERS *towers) {

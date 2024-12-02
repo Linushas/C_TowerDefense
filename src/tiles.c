@@ -12,7 +12,9 @@ TM initializeTiles(SDL_Renderer* renderer) {
     if (loadMap("res/maps/map1.csv", tileManager.tileMap)) {
         for (int i = 0; i < MAP_ROWS; i++) {
             for (int j = 0; j < MAP_COLS; j++) {
-                printf("%d ", tileManager.tileMap[i][j]);
+                if(tileManager.tileMap[i][j] < 10)
+                    printf("%d  ", tileManager.tileMap[i][j]);
+                else printf("%d ", tileManager.tileMap[i][j]);
             }
             printf("\n");
         }

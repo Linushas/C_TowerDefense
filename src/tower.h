@@ -14,6 +14,7 @@ typedef struct tower {
     SDL_Texture *texture[10];
     SDL_Texture *projTexture;
     int spriteState;
+    char *name;
     int x, y;
     int type;
     int level;
@@ -30,6 +31,7 @@ typedef struct tower {
 typedef struct towers {
     Tower types[10];
     Tower inGame[50];
+    int selectedTowerIndex;
     int activeTowers;
     SDL_Renderer* renderer;
 } TOWERS;
@@ -42,7 +44,7 @@ void updateTowers(TOWERS *towers, EM *enemies);
 void upgradeTower(Tower *tower);
 void drawProjectiles(TOWERS *towers);
 void drawTowers(TOWERS *towers);
-bool isTower(TOWERS *towers, int x, int y);
+int isTower(TOWERS *towers, int x, int y);
 void cleanupTowers(TOWERS *towers);
 
 #endif
