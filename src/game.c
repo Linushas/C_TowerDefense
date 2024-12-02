@@ -78,7 +78,7 @@ void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
                     (towers->inGame[i].proj[p].enemiesHit)++;
                     if(enemies->inGame[enemy].hp <= 0) {
                         enemies->inGame[enemy].isDead = true;
-                        hud->money += 10;
+                        hud->money += 20;
                     }
                 }
             }

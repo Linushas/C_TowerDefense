@@ -16,7 +16,7 @@ typedef struct tile {
 } Tile;
 
 typedef struct tileManager {
-    Tile tiles[10];
+    Tile tiles[50];
     int tileMap[MAP_ROWS][MAP_COLS];
     int selectedCol, selectedRow;
     int selectedTileID;

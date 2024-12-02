@@ -5,40 +5,77 @@ TM initializeTiles(SDL_Renderer* renderer) {
     TM tileManager;
     tileManager.renderer = renderer;
 
-    loadTiles(&tileManager);
-    loadMap("res/maps/map01.txt", tileManager.tileMap);
+    if (!loadTiles(&tileManager)) {
+        printf("Error loading tiles.\n");
+    }
+
+    if (loadMap("res/maps/map1.csv", tileManager.tileMap)) {
+        for (int i = 0; i < MAP_ROWS; i++) {
+            for (int j = 0; j < MAP_COLS; j++) {
+                printf("%d ", tileManager.tileMap[i][j]);
+            }
+            printf("\n");
+        }
+    }
 
     return tileManager;
 }
 
 int loadTiles(TM *tileManager) {
-    char *path1 = "res/images/grass.png";
-    char *path2 = "res/images/sand.png";
-    char *path3 = "res/images/selected_tile.png";
-
-    tileManager->tiles[0].texture = IMG_LoadTexture(tileManager->renderer, path1);
-    if (!tileManager->tiles[0].texture) {
+    char *path = "res/images/tileSheet.png";
+    SDL_Texture *sheet = IMG_LoadTexture(tileManager->renderer, path);
+    if (!sheet) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
-    printf("%s loaded\n", path1);
-    tileManager->tiles[0].isEnemyPath = false;
+    printf("%s loaded\n", path);
 
-    tileManager->tiles[1].texture = IMG_LoadTexture(tileManager->renderer, path2);
-    if (!tileManager->tiles[1].texture) {
-        printf("Failed to load texture: %s\n", IMG_GetError());
-        return false;
-    }
-    printf("%s loaded\n", path2);
-    tileManager->tiles[1].isEnemyPath = true;
+    int rows = 5, cols = 10;
 
-    tileManager->tiles[2].texture = IMG_LoadTexture(tileManager->renderer, path3);
-    if (!tileManager->tiles[2].texture) {
-        printf("Failed to load texture: %s\n", IMG_GetError());
-        return false;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int tileIndex = i * cols + j;
+            if (tileIndex >= 50) {
+                break;
+            }
+
+            SDL_Rect cropRect = {j * 32, i * 32, 32, 32};
+            tileManager->tiles[tileIndex].texture = SDL_CreateTexture(
+                tileManager->renderer,
+                SDL_PIXELFORMAT_RGBA8888,
+                SDL_TEXTUREACCESS_TARGET,
+                TILESIZE,
+                TILESIZE
+            );
+            if (!tileManager->tiles[tileIndex].texture) {
+                printf("Failed to create tile texture: %s\n", SDL_GetError());
+                SDL_DestroyTexture(sheet);
+                return false;
+            }
+
+            SDL_SetRenderTarget(tileManager->renderer, tileManager->tiles[tileIndex].texture);
+
+            if (SDL_RenderCopy(tileManager->renderer, sheet, &cropRect, NULL) < 0) {
+                printf("Failed to render copy tile: %s\n", SDL_GetError());
+                SDL_DestroyTexture(sheet);
+                return false;
+            }
+
+            tileManager->tiles[tileIndex].isEnemyPath = false;
+
+            SDL_SetRenderTarget(tileManager->renderer, NULL);
+        }
     }
-    printf("%s loaded\n", path3);
-    tileManager->tiles[2].isEnemyPath = false;
+
+    SDL_DestroyTexture(sheet);
+
+    tileManager->tiles[10].isEnemyPath = true;
+    tileManager->tiles[11].isEnemyPath = true;
+    tileManager->tiles[12].isEnemyPath = true;
+    tileManager->tiles[13].isEnemyPath = true;
+    tileManager->tiles[15].isEnemyPath = true;
+
+    return true;
 }
 
 int loadMap(char *path, int map[MAP_ROWS][MAP_COLS]) {
@@ -48,27 +85,36 @@ int loadMap(char *path, int map[MAP_ROWS][MAP_COLS]) {
         return 0;
     }
 
-    char ch;
     for (int i = 0; i < MAP_ROWS; i++) {
         for (int j = 0; j < MAP_COLS; j++) {
-            ch = fgetc(f);
-            if (ch == EOF || ch == '\n') {
-                printf("Error: Unexpected end of file or invalid format\n");
+            int value;
+            if (fscanf(f, "%d", &value) != 1) {
+                printf("Error: Invalid format or unexpected end of file\n");
                 fclose(f);
                 return 0;
             }
-            map[i][j] = ch - '0';
+            map[i][j] = value;
+
+            if (j < MAP_COLS - 1) {
+                char ch = fgetc(f);
+                if (ch != ',') {
+                    printf("Error: Missing comma or unexpected character\n");
+                    fclose(f);
+                    return 0;
+                }
+            }
         }
 
-        if (fgetc(f) != '\n' && !feof(f)) {
-            printf("Error: Line too long in file\n");
+        char ch = fgetc(f);
+        if (ch != '\n' && ch != EOF) {
+            printf("Error: Line too long or invalid format\n");
             fclose(f);
             return 0;
         }
     }
 
     fclose(f);
-    printf("Succesfully loaded map: %s\n", path);
+    printf("Successfully loaded map: %s\n", path);
     return 1;
 }
 

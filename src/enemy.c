@@ -15,7 +15,7 @@ void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos) {
     int tileX = x_pos / TILESIZE;
     int tileY = y_pos / TILESIZE;
 
-    if (tileManager->tileMap[tileY][tileX] != 1) {
+    if (tileManager->tiles[tileManager->tileMap[tileY][tileX]].isEnemyPath == false) {
         printf("Invalid spawn position (%d, %d). Must be on a path tile.\n", tileX, tileY);
         return;
     }
@@ -73,34 +73,34 @@ void updateEnemies(EM *enemies, TM *tileManager) {
 
             switch (enemy->direction) {
                 case UP:
-                    if (centerY > 0 && tileManager->tileMap[centerY - 1][centerX] != 1)
+                    if (centerY > 0 && tileManager->tiles[tileManager->tileMap[centerY - 1][centerX]].isEnemyPath == false)
                         changeDirection = true;
                     break;
                 case DOWN:
-                    if (centerY < MAP_ROWS - 1 && tileManager->tileMap[centerY + 1][centerX] != 1)
+                    if (centerY < MAP_ROWS - 1 && tileManager->tiles[tileManager->tileMap[centerY + 1][centerX]].isEnemyPath == false)
                         changeDirection = true;
                     break;
                 case LEFT:
-                    if (centerX > 0 && tileManager->tileMap[centerY][centerX - 1] != 1)
+                    if (centerX > 0 && tileManager->tiles[tileManager->tileMap[centerY][centerX - 1]].isEnemyPath == false)
                         changeDirection = true;
                     break;
                 case RIGHT:
-                    if (centerX < MAP_COLS - 1 && tileManager->tileMap[centerY][centerX + 1] != 1)
+                    if (centerX < MAP_COLS - 1 && tileManager->tiles[tileManager->tileMap[centerY][centerX + 1]].isEnemyPath == false)
                         changeDirection = true;
                     break;
             }
 
             if (changeDirection) {
                 if (enemy->direction == RIGHT || enemy->direction == LEFT) {
-                    if (centerY > 0 && tileManager->tileMap[centerY - 1][centerX] == 1) {
+                    if (centerY > 0 && tileManager->tiles[tileManager->tileMap[centerY - 1][centerX]].isEnemyPath) {
                         enemy->direction = UP;
-                    } else if (centerY < MAP_ROWS - 1 && tileManager->tileMap[centerY + 1][centerX] == 1) {
+                    } else if (centerY < MAP_ROWS - 1 && tileManager->tiles[tileManager->tileMap[centerY + 1][centerX]].isEnemyPath) {
                         enemy->direction = DOWN;
                     }
                 } else if (enemy->direction == UP || enemy->direction == DOWN) {
-                    if (centerX > 0 && tileManager->tileMap[centerY][centerX - 1] == 1) {
+                    if (centerX > 0 && tileManager->tiles[tileManager->tileMap[centerY][centerX - 1]].isEnemyPath) {
                         enemy->direction = LEFT;
-                    } else if (centerX < MAP_COLS - 1 && tileManager->tileMap[centerY][centerX + 1] == 1) {
+                    } else if (centerX < MAP_COLS - 1 && tileManager->tiles[tileManager->tileMap[centerY][centerX + 1]].isEnemyPath) {
                         enemy->direction = RIGHT;
                     }
                 }
@@ -127,7 +127,7 @@ void updateEnemies(EM *enemies, TM *tileManager) {
     if(ticks > 100) {
         ticks = 0;
         if(enemies->activeEnemies < 50)
-            newEnemy(enemies, tileManager, 0*TILESIZE, 3*TILESIZE);
+            newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE);
     }
     ticks++;
 }
