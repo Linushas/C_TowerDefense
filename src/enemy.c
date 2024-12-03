@@ -165,6 +165,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
                     wait = true;
                 }
             }
+            break;
         case 2: 
             if(ticks > 80) {
                 if(enemies->activeEnemies < 5) {
@@ -177,6 +178,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
                     wait = true;
                 }
             }
+            break;
         case 3: 
             if(ticks > 100) {
                 if(enemies->activeEnemies < 10) {
@@ -189,6 +191,20 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
                     wait = true;
                 }
             }
+            break;
+        case 4: 
+            if(ticks > 10) {
+                if(enemies->activeEnemies < 200) {
+                    ticks = 0;
+                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 5);
+                    wait = false;
+                }
+                else {
+                    nextRound = true;
+                    wait = true;
+                }
+            }
+            break;
     } 
 
     ticks++;
