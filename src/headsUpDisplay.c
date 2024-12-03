@@ -24,7 +24,7 @@ void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager){
     }
     else if(hud->state == UPGRADE_STATE){
         if(hud->mouseX > SCREEN_WIDTH-180 && hud->mouseX < (SCREEN_WIDTH-180)+(TILESIZE*2) &&
-            hud->mouseY > 100 && hud->mouseY < 100+40) {
+            hud->mouseY > 100 && hud->mouseY < 100+40 && hud->money >= 60) {
                 if(towers->inGame[towers->selectedTowerIndex].level < 5) {
                     upgradeTower(&towers->inGame[towers->selectedTowerIndex]);
                     hud->state = NO_HUD;
