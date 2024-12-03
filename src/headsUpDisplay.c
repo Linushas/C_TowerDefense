@@ -38,7 +38,7 @@ void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager){
     
 }
 
-void drawHUD(HUD *hud, TOWERS *towers){
+void drawHUD(HUD *hud, TOWERS *towers, EM *enemies){
     SDL_Texture *texture;
     SDL_Color fontColor1 = {255, 255, 255, 255};
     SDL_Color fontColor2 = {255, 0, 0, 255};
@@ -71,14 +71,14 @@ void drawHUD(HUD *hud, TOWERS *towers){
             renderText(hud, lvl, SCREEN_WIDTH-180, 70, fontColor1);
             createButton(hud, "Upgrade", SCREEN_WIDTH-180, 100, TILESIZE*2, 40, fontColor3, fontColor1);
         }
-        
-
-        
     }
 
     char string[60];
     sprintf(string, "$%d", hud->money);
     renderText(hud, string, 20, 20, fontColor1);
+
+    sprintf(string, "Wave: %d", enemies->currentWave);
+    renderText(hud, string, 20, 50, fontColor1);
 }
 
 void renderText(HUD* hud, char *str, int x, int y, SDL_Color textColor) {

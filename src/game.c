@@ -95,7 +95,7 @@ void render(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
     drawProjectiles(towers);
     drawTowers(towers);
     drawEnemies(enemies);
-    drawHUD(hud, towers);
+    drawHUD(hud, towers, enemies);
 
     SDL_RenderPresent(tileManager->renderer);
 }

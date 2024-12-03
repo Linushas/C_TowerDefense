@@ -126,27 +126,37 @@ void updateTowers(TOWERS *towers, EM *enemies) {
         i++;
     } while(targetEnemy.isDead);
 
-    for(int i = 0; i < towers->activeTowers; i++){
-        double dx = targetEnemy.x - towers->inGame[i].x * TILESIZE;
-        double dy = targetEnemy.y - towers->inGame[i].y * TILESIZE;
-        double angle = atan2(dy, dx) * 180 / M_PI;
-        if (angle < 0) angle += 360; 
-        towers->inGame[i].angle = angle;
+    bool isAllDead = true;
+    for(int i = 0; i < enemies->activeEnemies; i++) {
+        if(enemies->inGame[i].isDead == false) {
+            isAllDead = false;
+            break;
+        }
     }
 
-    for(int i = 0; i < towers->activeTowers; i++) {
-        if(towers->inGame[i].timer > towers->inGame[i].reloadDelay) {
-            towers->inGame[i].timer = 0;
-            shoot(&towers->inGame[i]);
-        }  
-        if(towers->inGame[i].timer > towers->inGame[i].reloadDelay * 2/3) {
-            towers->inGame[i].spriteState = towers->inGame[i].level*2 - 1;
+    if(!isAllDead) {
+        for(int i = 0; i < towers->activeTowers; i++){
+            double dx = targetEnemy.x - towers->inGame[i].x * TILESIZE;
+            double dy = targetEnemy.y - towers->inGame[i].y * TILESIZE;
+            double angle = atan2(dy, dx) * 180 / M_PI;
+            if (angle < 0) angle += 360; 
+            towers->inGame[i].angle = angle;
         }
-        else {
-            towers->inGame[i].spriteState = towers->inGame[i].level*2 - 2;
+
+        for(int i = 0; i < towers->activeTowers; i++) {
+            if(towers->inGame[i].timer > towers->inGame[i].reloadDelay) {
+                towers->inGame[i].timer = 0;
+                shoot(&towers->inGame[i]);
+            }  
+            if(towers->inGame[i].timer > towers->inGame[i].reloadDelay * 2/3) {
+                towers->inGame[i].spriteState = towers->inGame[i].level*2 - 1;
+            }
+            else {
+                towers->inGame[i].spriteState = towers->inGame[i].level*2 - 2;
+            }
+            
+            (towers->inGame[i].timer)++;
         }
-        
-        (towers->inGame[i].timer)++;
     }
 
     for(int i = 0; i < towers->activeTowers; i++) {

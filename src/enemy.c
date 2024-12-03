@@ -5,13 +5,14 @@ EM initializeEnemies(SDL_Renderer* renderer) {
     EM enemies;
     enemies.renderer = renderer;
     enemies.activeEnemies = 0;
+    enemies.currentWave = 1;
     
     loadEnemies(&enemies);
 
     return enemies;
 }
 
-void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos) {
+void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos, int speed) {
     int tileX = x_pos / TILESIZE;
     int tileY = y_pos / TILESIZE;
 
@@ -23,7 +24,7 @@ void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos) {
     enemies->inGame[enemies->activeEnemies].texture = enemies->types[0].texture;
     enemies->inGame[enemies->activeEnemies].type = 0;
     enemies->inGame[enemies->activeEnemies].isDead = false;
-    enemies->inGame[enemies->activeEnemies].speed = 2;
+    enemies->inGame[enemies->activeEnemies].speed = speed;
     enemies->inGame[enemies->activeEnemies].level = 0;
     enemies->inGame[enemies->activeEnemies].direction = RIGHT;
     enemies->inGame[enemies->activeEnemies].x = x_pos;
@@ -123,12 +124,73 @@ void updateEnemies(EM *enemies, TM *tileManager) {
         }
     }
 
+    spawnEnemies(enemies, tileManager);
+}
+
+void spawnEnemies(EM *enemies, TM *tileManager) {
     static int ticks = 0;
-    if(ticks > 100) {
-        ticks = 0;
-        if(enemies->activeEnemies < 50)
-            newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE);
+    static bool wait = true;
+
+    static bool nextRound = false;
+    bool isAllDead = true;
+    for(int i = 0; i < enemies->activeEnemies; i++) {
+        if(enemies->inGame[i].isDead == false) {
+            isAllDead = false;
+            break;
+        }
     }
+
+    if((wait && ticks < 6*60) || (wait && !isAllDead)) {
+        ticks++;
+        return;
+    }
+    if(nextRound) {
+        ticks = 0;
+        enemies->activeEnemies = 0;
+        (enemies->currentWave)++;
+        nextRound = false;
+    }
+    wait = false;
+
+    switch(enemies->currentWave) {
+        case 1: 
+            if(ticks > 12) {
+                if(enemies->activeEnemies < 2) {
+                    ticks = 0;
+                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 2);
+                    wait = false;
+                }
+                else {
+                    nextRound = true;
+                    wait = true;
+                }
+            }
+        case 2: 
+            if(ticks > 80) {
+                if(enemies->activeEnemies < 5) {
+                    ticks = 0;
+                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 4);
+                    wait = false;
+                }
+                else {
+                    nextRound = true;
+                    wait = true;
+                }
+            }
+        case 3: 
+            if(ticks > 100) {
+                if(enemies->activeEnemies < 10) {
+                    ticks = 0;
+                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 3);
+                    wait = false;
+                }
+                else {
+                    nextRound = true;
+                    wait = true;
+                }
+            }
+    } 
+
     ticks++;
 }
 

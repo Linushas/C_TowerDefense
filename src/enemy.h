@@ -24,13 +24,15 @@ typedef struct enemy {
 typedef struct enemyManager {
     SDL_Texture *lowHPTexture;
     Enemy types[10];
-    Enemy inGame[50];
+    Enemy inGame[200];
+    int currentWave;
     int activeEnemies;
     SDL_Renderer* renderer;
 } EM;
 
 EM initializeEnemies(SDL_Renderer* renderer);
-void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos);
+void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos, int speed);
+void spawnEnemies(EM *enemies, TM *tileManager);
 int loadEnemies(EM *enemies);
 void updateEnemies(EM *enemies, TM *tileManager);
 Enemy *isEnemy(EM *enemies);
