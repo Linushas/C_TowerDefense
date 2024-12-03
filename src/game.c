@@ -10,7 +10,7 @@ int gameLoop(SDL_Window* win) {
     HUD hud;
     SDL_Event event;
     int running = loadGame(win, renderer, &tileManager, &towers, &enemies, &hud);
-    hud.money = 400;
+    hud.money = 440;
 
     // MAIN GAME LOOP
     while(running) {

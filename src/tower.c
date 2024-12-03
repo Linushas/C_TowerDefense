@@ -28,6 +28,7 @@ void newTower(TOWERS *towers, int x_pos, int y_pos) {
         towers->inGame[towers->activeTowers].x = x_pos;
         towers->inGame[towers->activeTowers].y = y_pos;
         towers->inGame[towers->activeTowers].level = 1;
+        towers->inGame[towers->activeTowers].upgradePrice = 80;
         towers->inGame[towers->activeTowers].damage = 1;
         towers->inGame[towers->activeTowers].projIndex = 0;
         towers->inGame[towers->activeTowers].projSpeed = 120;
@@ -43,6 +44,7 @@ int loadTowers(TOWERS *towers) {
     char *path = "res/images/tower01.png";
     char *pathProjectile = "res/images/projectile1.png";
     char *pathProjectile2 = "res/images/fireball.png";
+    char *pathProjectile3 = "res/images/laser.png";
 
     SDL_Texture *sheet = IMG_LoadTexture(towers->renderer, path);
     if (!sheet) {
@@ -107,10 +109,17 @@ int loadTowers(TOWERS *towers) {
         return false;
     }
     printf("%s loaded\n", pathProjectile2);
+    
+    towers->types[0].projTexture[2] = IMG_LoadTexture(towers->renderer, pathProjectile3);
+    if (!towers->types[0].projTexture[2]) {
+        printf("Failed to load texture: %s\n", IMG_GetError());
+        return false;
+    }
+    printf("%s loaded\n", pathProjectile3);
 }
 
 void shoot(Tower *tower) {
-    if(tower->projIndex >= 10) tower->projIndex = 0;
+    if(tower->projIndex >= 60) tower->projIndex = 0;
     tower->proj[tower->projIndex].x = (double)tower->x * TILESIZE;
     tower->proj[tower->projIndex].y = (double)tower->y * TILESIZE;
     tower->proj[tower->projIndex].angle = tower->angle;
@@ -182,31 +191,34 @@ void upgradeTower(Tower *tower) {
             tower->reloadDelay = 60;
             tower->damage = 1;
             tower->currentProjTexture = 0;
+            tower->upgradePrice = 80;
             break;
         case 2: 
             tower->projSpeed = 120;
             tower->reloadDelay = 30;
             tower->damage = 1;
             tower->currentProjTexture = 0;
+            tower->upgradePrice = 130;
             break;
         case 3: 
             tower->projSpeed = 120;
             tower->reloadDelay = 30;
             tower->damage = 2;
             tower->currentProjTexture = 1;
+            tower->upgradePrice = 180;
             break;
         case 4: 
             tower->projSpeed = 160;
             tower->reloadDelay = 25;
             tower->damage = 2;
             tower->currentProjTexture = 1;
+            tower->upgradePrice = 280;
             break;
         case 5: 
-            // Add laserbeam
-            tower->projSpeed = 200;
-            tower->reloadDelay = 15;
+            tower->projSpeed = 500;
+            tower->reloadDelay = 1;
             tower->damage = 1;
-            tower->currentProjTexture = 1;
+            tower->currentProjTexture = 2;
             break;
     }
 }

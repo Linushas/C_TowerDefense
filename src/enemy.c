@@ -154,8 +154,8 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
 
     switch(enemies->currentWave) {
         case 1: 
-            if(ticks > 12) {
-                if(enemies->activeEnemies < 2) {
+            if(ticks > 140) {
+                if(enemies->activeEnemies < 10) {
                     ticks = 0;
                     newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 2);
                     wait = false;
@@ -167,8 +167,8 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             }
             break;
         case 2: 
-            if(ticks > 80) {
-                if(enemies->activeEnemies < 5) {
+            if(ticks > 100) {
+                if(enemies->activeEnemies < 4) {
                     ticks = 0;
                     newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 4);
                     wait = false;
@@ -181,7 +181,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             break;
         case 3: 
             if(ticks > 100) {
-                if(enemies->activeEnemies < 10) {
+                if(enemies->activeEnemies < 20) {
                     ticks = 0;
                     newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 3);
                     wait = false;
@@ -193,8 +193,34 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             }
             break;
         case 4: 
+            if(ticks > 80) {
+                if(enemies->activeEnemies < 10) {
+                    ticks = 0;
+                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 3);
+                    wait = false;
+                }
+                else {
+                    nextRound = true;
+                    wait = true;
+                }
+            }
+            break;
+        case 5: 
+            if(ticks > 120) {
+                if(enemies->activeEnemies < 20) {
+                    ticks = 0;
+                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 4);
+                    wait = false;
+                }
+                else {
+                    nextRound = true;
+                    wait = true;
+                }
+            }
+            break;
+        case 6: 
             if(ticks > 10) {
-                if(enemies->activeEnemies < 200) {
+                if(enemies->activeEnemies < 40) {
                     ticks = 0;
                     newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 5);
                     wait = false;

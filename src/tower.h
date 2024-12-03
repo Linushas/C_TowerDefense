@@ -19,8 +19,9 @@ typedef struct tower {
     int type;
     int level;
     int price;
+    int upgradePrice;
     double angle;
-    Projectile proj[10];
+    Projectile proj[60];
     int projIndex;
     int currentProjTexture;
     double projSpeed;
