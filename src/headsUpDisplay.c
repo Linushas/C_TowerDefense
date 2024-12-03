@@ -28,6 +28,7 @@ void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager){
                 if(towers->inGame[towers->selectedTowerIndex].level < 5) {
                     upgradeTower(&towers->inGame[towers->selectedTowerIndex]);
                     hud->state = NO_HUD;
+                    hud->money -= 60;
                 }
         }
         SDL_Rect button = {SCREEN_WIDTH-180, 100, TILESIZE*2, 40};
@@ -69,7 +70,7 @@ void drawHUD(HUD *hud, TOWERS *towers, EM *enemies){
         else {
             sprintf(lvl, "Level: %d", towers->inGame[towers->selectedTowerIndex].level);
             renderText(hud, lvl, SCREEN_WIDTH-180, 70, fontColor1);
-            createButton(hud, "Upgrade", SCREEN_WIDTH-180, 100, TILESIZE*2, 40, fontColor3, fontColor1);
+            createButton(hud, "Upgrade $60", SCREEN_WIDTH-180, 100, TILESIZE*2, 40, fontColor3, fontColor1);
         }
     }
 

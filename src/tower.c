@@ -142,21 +142,26 @@ void updateTowers(TOWERS *towers, EM *enemies) {
             if (angle < 0) angle += 360; 
             towers->inGame[i].angle = angle;
         }
+    }
 
-        for(int i = 0; i < towers->activeTowers; i++) {
-            if(towers->inGame[i].timer > towers->inGame[i].reloadDelay) {
+    for(int i = 0; i < towers->activeTowers; i++) {
+        if(towers->inGame[i].timer > towers->inGame[i].reloadDelay) {
+            if(!isAllDead) {
                 towers->inGame[i].timer = 0;
                 shoot(&towers->inGame[i]);
-            }  
-            if(towers->inGame[i].timer > towers->inGame[i].reloadDelay * 2/3) {
-                towers->inGame[i].spriteState = towers->inGame[i].level*2 - 1;
             }
-            else {
-                towers->inGame[i].spriteState = towers->inGame[i].level*2 - 2;
-            }
-            
-            (towers->inGame[i].timer)++;
+        }  
+
+        if(towers->inGame[i].timer > towers->inGame[i].reloadDelay * 2/3 && !isAllDead) {
+            towers->inGame[i].spriteState = towers->inGame[i].level*2 - 1;
         }
+        else {
+            towers->inGame[i].spriteState = towers->inGame[i].level*2 - 2;
+        }
+
+        if(isAllDead) towers->inGame[i].spriteState = towers->inGame[i].level*2 - 2;
+        
+        (towers->inGame[i].timer)++;
     }
 
     for(int i = 0; i < towers->activeTowers; i++) {
