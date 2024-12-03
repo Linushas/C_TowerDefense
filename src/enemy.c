@@ -23,7 +23,7 @@ void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos) {
     enemies->inGame[enemies->activeEnemies].texture = enemies->types[0].texture;
     enemies->inGame[enemies->activeEnemies].type = 0;
     enemies->inGame[enemies->activeEnemies].isDead = false;
-    enemies->inGame[enemies->activeEnemies].speed = 3;
+    enemies->inGame[enemies->activeEnemies].speed = 2;
     enemies->inGame[enemies->activeEnemies].level = 0;
     enemies->inGame[enemies->activeEnemies].direction = RIGHT;
     enemies->inGame[enemies->activeEnemies].x = x_pos;

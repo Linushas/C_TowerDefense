@@ -31,7 +31,7 @@ void newTower(TOWERS *towers, int x_pos, int y_pos) {
         towers->inGame[towers->activeTowers].projIndex = 0;
         towers->inGame[towers->activeTowers].projSpeed = 120;
         towers->inGame[towers->activeTowers].timer = 0;
-        towers->inGame[towers->activeTowers].reloadDelay = 30;
+        towers->inGame[towers->activeTowers].reloadDelay = 60;
         towers->inGame[towers->activeTowers].spriteState = 0;
         (towers->activeTowers)++;
     }
@@ -154,15 +154,15 @@ void upgradeTower(Tower *tower) {
     switch(tower->level) {
         case 1: 
             tower->projSpeed = 120;
-            tower->reloadDelay = 30;
+            tower->reloadDelay = 60;
             break;
         case 2: 
             tower->projSpeed = 120;
-            tower->reloadDelay = 15;
+            tower->reloadDelay = 30;
             break;
         case 3: 
             tower->projSpeed = 120;
-            tower->reloadDelay = 25;
+            tower->reloadDelay = 30;
             break;
     }
 }
