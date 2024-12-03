@@ -28,11 +28,13 @@ void newTower(TOWERS *towers, int x_pos, int y_pos) {
         towers->inGame[towers->activeTowers].x = x_pos;
         towers->inGame[towers->activeTowers].y = y_pos;
         towers->inGame[towers->activeTowers].level = 1;
+        towers->inGame[towers->activeTowers].damage = 1;
         towers->inGame[towers->activeTowers].projIndex = 0;
         towers->inGame[towers->activeTowers].projSpeed = 120;
         towers->inGame[towers->activeTowers].timer = 0;
         towers->inGame[towers->activeTowers].reloadDelay = 60;
         towers->inGame[towers->activeTowers].spriteState = 0;
+        towers->inGame[towers->activeTowers].currentProjTexture = 0;
         (towers->activeTowers)++;
     }
 }
@@ -40,6 +42,7 @@ void newTower(TOWERS *towers, int x_pos, int y_pos) {
 int loadTowers(TOWERS *towers) {
     char *path = "res/images/tower01.png";
     char *pathProjectile = "res/images/projectile1.png";
+    char *pathProjectile2 = "res/images/fireball.png";
 
     SDL_Texture *sheet = IMG_LoadTexture(towers->renderer, path);
     if (!sheet) {
@@ -91,12 +94,19 @@ int loadTowers(TOWERS *towers) {
 
     SDL_DestroyTexture(sheet);
 
-    towers->types[0].projTexture = IMG_LoadTexture(towers->renderer, pathProjectile);
-    if (!sheet) {
+    towers->types[0].projTexture[0] = IMG_LoadTexture(towers->renderer, pathProjectile);
+    if (!towers->types[0].projTexture[0]) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
     printf("%s loaded\n", pathProjectile);
+
+    towers->types[0].projTexture[1] = IMG_LoadTexture(towers->renderer, pathProjectile2);
+    if (!towers->types[0].projTexture[1]) {
+        printf("Failed to load texture: %s\n", IMG_GetError());
+        return false;
+    }
+    printf("%s loaded\n", pathProjectile2);
 }
 
 void shoot(Tower *tower) {
@@ -155,14 +165,33 @@ void upgradeTower(Tower *tower) {
         case 1: 
             tower->projSpeed = 120;
             tower->reloadDelay = 60;
+            tower->damage = 1;
+            tower->currentProjTexture = 0;
             break;
         case 2: 
             tower->projSpeed = 120;
             tower->reloadDelay = 30;
+            tower->damage = 1;
+            tower->currentProjTexture = 0;
             break;
         case 3: 
             tower->projSpeed = 120;
             tower->reloadDelay = 30;
+            tower->damage = 2;
+            tower->currentProjTexture = 1;
+            break;
+        case 4: 
+            tower->projSpeed = 160;
+            tower->reloadDelay = 25;
+            tower->damage = 2;
+            tower->currentProjTexture = 1;
+            break;
+        case 5: 
+            // Add laserbeam
+            tower->projSpeed = 200;
+            tower->reloadDelay = 15;
+            tower->damage = 1;
+            tower->currentProjTexture = 1;
             break;
     }
 }
@@ -173,7 +202,7 @@ void drawProjectiles(TOWERS *towers) {
     for(int i = 0; i < towers->activeTowers; i++) {
         for(int p = 0; p < towers->inGame[i].projIndex; p++) {
             if(towers->inGame[i].proj[p].enemiesHit == 0) {
-                texture = towers->inGame[i].projTexture;
+                texture = towers->inGame[i].projTexture[towers->inGame[i].currentProjTexture];
                 SDL_Rect texture_rect = {(int)towers->inGame[i].proj[p].x, (int)towers->inGame[i].proj[p].y, TILESIZE, TILESIZE};
                 SDL_RenderCopyEx(towers->renderer, texture, NULL, &texture_rect, towers->inGame[i].proj[p].angle, NULL, SDL_FLIP_NONE);
             }

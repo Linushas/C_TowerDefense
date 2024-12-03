@@ -12,7 +12,7 @@ typedef struct projectile {
 
 typedef struct tower {
     SDL_Texture *texture[20];
-    SDL_Texture *projTexture;
+    SDL_Texture *projTexture[10];
     int spriteState;
     char *name;
     int x, y;
@@ -22,6 +22,7 @@ typedef struct tower {
     double angle;
     Projectile proj[10];
     int projIndex;
+    int currentProjTexture;
     double projSpeed;
     int damage;
     int reloadDelay;

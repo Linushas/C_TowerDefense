@@ -73,7 +73,7 @@ void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud) {
                 && enemies->inGame[enemy].y <= (int)towers->inGame[i].proj[p].y + TILESIZE 
                 && enemies->inGame[enemy].isDead == false) {
                     if(towers->inGame[i].proj[p].enemiesHit == 0) {
-                        (enemies->inGame[enemy].hp)--;
+                        enemies->inGame[enemy].hp -= towers->inGame[i].damage;
                     }
                     (towers->inGame[i].proj[p].enemiesHit)++;
                     if(enemies->inGame[enemy].hp <= 0) {
