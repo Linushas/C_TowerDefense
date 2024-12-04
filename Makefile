@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Isrc/Include 
-LDFLAGS = -Lsrc/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+LDFLAGS = -Lsrc/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -Wall
 SRC = src/main.c src/tiles.c src/headsUpDisplay.c src/game.c src/tower.c src/enemy.c
 OBJ = $(SRC:.c=.o)
 

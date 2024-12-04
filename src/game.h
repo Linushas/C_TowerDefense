@@ -10,12 +10,17 @@
 #define SCREEN_HEIGHT TILESIZE*MAP_ROWS
 #define FPS 60
 
+/*typedef struct keyHanlder {
+    ;
+} KeyH;*/
+
 typedef struct gameModel {
     SDL_Window *win;
     SDL_Renderer *renderer;
+    SDL_Event *event;
     TM *tileManager;
     TOWERS *towers;
-    EM *ememies;
+    EM *enemies;
     HUD *hud;
     int state;
     unsigned int renderTime;
@@ -23,11 +28,11 @@ typedef struct gameModel {
     int money;
 } GameModel;
 
-int gameLoop(SDL_Window* win);
-void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
-void render(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
+int gameLoop(GameModel *gm);
+void update(GameModel *gm);
+void render(GameModel *gm);
 
-int loadGame(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
-void cleanup(SDL_Window* win, SDL_Renderer* renderer, TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
+int loadGame(GameModel *gm);
+void cleanup(GameModel *gm);
 
 #endif
