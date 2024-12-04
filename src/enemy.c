@@ -12,7 +12,7 @@ EM initializeEnemies(SDL_Renderer* renderer) {
     return enemies;
 }
 
-void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos, int speed) {
+void newEnemy(EM *enemies, TM *tileManager, int type, int x_pos, int y_pos, int speed) {
     int tileX = x_pos / TILESIZE;
     int tileY = y_pos / TILESIZE;
 
@@ -21,20 +21,31 @@ void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos, int speed) {
         return;
     }
 
-    enemies->inGame[enemies->activeEnemies] = enemies->types[0];
-    enemies->inGame[enemies->activeEnemies].currentTexture = 0;
-    enemies->inGame[enemies->activeEnemies].type = 0;
-    enemies->inGame[enemies->activeEnemies].isDead = false;
-    enemies->inGame[enemies->activeEnemies].speed = speed;
-    enemies->inGame[enemies->activeEnemies].level = 0;
-    enemies->inGame[enemies->activeEnemies].direction = RIGHT;
-    enemies->inGame[enemies->activeEnemies].lastHorizontalDirection = RIGHT;
+    switch(type) {
+        case 0:
+            enemies->inGame[enemies->activeEnemies].type = 0;
+            enemies->inGame[enemies->activeEnemies].maxHP = 4;
+            enemies->inGame[enemies->activeEnemies].hp = 4;
+            break;
+        case 1:
+            enemies->inGame[enemies->activeEnemies].type = 1;
+            enemies->inGame[enemies->activeEnemies].maxHP = 8;
+            enemies->inGame[enemies->activeEnemies].hp = 8;
+            break;
+        default: 
+            enemies->inGame[enemies->activeEnemies].type = 1;
+            enemies->inGame[enemies->activeEnemies].maxHP = 4;
+            enemies->inGame[enemies->activeEnemies].hp = 4;
+    }
+
     enemies->inGame[enemies->activeEnemies].x = x_pos;
     enemies->inGame[enemies->activeEnemies].y = y_pos;
-    enemies->inGame[enemies->activeEnemies].y = y_pos;
     enemies->inGame[enemies->activeEnemies].tilesTraveled = 0;
-    enemies->inGame[enemies->activeEnemies].maxHP = 4;
-    enemies->inGame[enemies->activeEnemies].hp = 4;
+    enemies->inGame[enemies->activeEnemies].direction = RIGHT;
+    enemies->inGame[enemies->activeEnemies].lastHorizontalDirection = RIGHT;
+    enemies->inGame[enemies->activeEnemies].speed = speed;
+    enemies->inGame[enemies->activeEnemies].isDead = false;
+    enemies->inGame[enemies->activeEnemies].currentTexture = 0;
 
     (enemies->activeEnemies)++;
 }
@@ -59,21 +70,21 @@ int loadEnemies(EM *enemies) {
             }
 
             SDL_Rect cropRect = {j * 32, i * 32, 32, 32};
-            enemies->types[0].texture[spriteIndex] = SDL_CreateTexture(
+            enemies->textures[spriteIndex] = SDL_CreateTexture(
                 enemies->renderer,
                 SDL_PIXELFORMAT_RGBA8888,
                 SDL_TEXTUREACCESS_TARGET,
                 TILESIZE,
                 TILESIZE
             );
-            if (!enemies->types[0].texture[spriteIndex]) {
+            if (!enemies->textures[spriteIndex]) {
                 printf("Failed to create sprite texture: %s\n", SDL_GetError());
                 SDL_DestroyTexture(sheet);
                 return false;
             }
             
-            SDL_SetRenderTarget(enemies->renderer, enemies->types[0].texture[spriteIndex]);
-            SDL_SetTextureBlendMode(enemies->types[0].texture[spriteIndex], SDL_BLENDMODE_BLEND);
+            SDL_SetRenderTarget(enemies->renderer, enemies->textures[spriteIndex]);
+            SDL_SetTextureBlendMode(enemies->textures[spriteIndex], SDL_BLENDMODE_BLEND);
 
             if (SDL_RenderCopy(enemies->renderer, sheet, &cropRect, NULL) < 0) {
                 printf("Failed to render copy sprite: %s\n", SDL_GetError());
@@ -83,7 +94,7 @@ int loadEnemies(EM *enemies) {
 
             SDL_SetRenderTarget(enemies->renderer, NULL);
 
-            if (!enemies->types[0].texture[spriteIndex]) {
+            if (!enemies->textures[spriteIndex]) {
                 printf("Texture creation failed at sprite %d: %s\n", spriteIndex, SDL_GetError());
             }
 
@@ -157,21 +168,21 @@ void updateEnemies(EM *enemies, TM *tileManager) {
         switch (enemy->direction) {
             case UP:
                 if(enemy->lastHorizontalDirection == RIGHT)
-                    enemy->currentTexture = 3 + hp;
-                else enemy->currentTexture = 2 + hp;
+                    enemy->currentTexture = (enemy->type*16) + 3 + hp;
+                else enemy->currentTexture = (enemy->type*16) + 2 + hp;
 
                 enemy->y -= enemy->speed;
                 break;
             case DOWN:
                 if(ticks >= 30 && hp != 12) {
                     if(enemy->lastHorizontalDirection == RIGHT)
-                        enemy->currentTexture = 5 + hp;
-                    else enemy->currentTexture = 4 + hp;
+                        enemy->currentTexture = (enemy->type*16) + 5 + hp;
+                    else enemy->currentTexture = (enemy->type*16) + 4 + hp;
                 }
                 else {
                     if(enemy->lastHorizontalDirection == RIGHT)
-                        enemy->currentTexture = 1 + hp;
-                    else enemy->currentTexture = 0 + hp;
+                        enemy->currentTexture = (enemy->type*16) + 1 + hp;
+                    else enemy->currentTexture = (enemy->type*16) + 0 + hp;
                 }
                 
                 enemy->y += enemy->speed;
@@ -180,8 +191,8 @@ void updateEnemies(EM *enemies, TM *tileManager) {
                 enemy->lastHorizontalDirection = LEFT;
 
                 if(ticks >= 30 && hp != 12) 
-                    enemy->currentTexture = 4 + hp;
-                else enemy->currentTexture = 0 + hp;
+                    enemy->currentTexture = (enemy->type*16) + 4 + hp;
+                else enemy->currentTexture = (enemy->type*16) + 0 + hp;
 
                 enemy->x -= enemy->speed;
                 break;
@@ -189,8 +200,8 @@ void updateEnemies(EM *enemies, TM *tileManager) {
                 enemy->lastHorizontalDirection = RIGHT;
 
                 if(ticks >= 30 && hp != 12)
-                    enemy->currentTexture = 5 + hp;
-                else enemy->currentTexture = 1 + hp;
+                    enemy->currentTexture = (enemy->type*16) + 5 + hp;
+                else enemy->currentTexture = (enemy->type*16) + 1 + hp;
 
                 enemy->x += enemy->speed;
                 break;
@@ -233,7 +244,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             if(ticks > 140) {
                 if(enemies->activeEnemies < 10) {
                     ticks = 0;
-                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 2);
+                    newEnemy(enemies, tileManager, 0, 0*TILESIZE, 4*TILESIZE, 2);
                     wait = false;
                 }
                 else {
@@ -246,7 +257,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             if(ticks > 100) {
                 if(enemies->activeEnemies < 4) {
                     ticks = 0;
-                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 4);
+                    newEnemy(enemies, tileManager, 0, 0*TILESIZE, 4*TILESIZE, 4);
                     wait = false;
                 }
                 else {
@@ -259,8 +270,8 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             if(ticks > 100) {
                 if(enemies->activeEnemies < 20) {
                     ticks = 0;
-                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 3);
-                    wait = false;
+                    newEnemy(enemies, tileManager, 1, 0*TILESIZE, 4*TILESIZE, 3);
+                    wait = false; 
                 }
                 else {
                     nextRound = true;
@@ -272,7 +283,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             if(ticks > 80) {
                 if(enemies->activeEnemies < 10) {
                     ticks = 0;
-                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 3);
+                    newEnemy(enemies, tileManager, 1, 0*TILESIZE, 4*TILESIZE, 3);
                     wait = false;
                 }
                 else {
@@ -285,7 +296,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             if(ticks > 120) {
                 if(enemies->activeEnemies < 20) {
                     ticks = 0;
-                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 4);
+                    newEnemy(enemies, tileManager, 1, 0*TILESIZE, 4*TILESIZE, 4);
                     wait = false;
                 }
                 else {
@@ -298,7 +309,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             if(ticks > 10) {
                 if(enemies->activeEnemies < 40) {
                     ticks = 0;
-                    newEnemy(enemies, tileManager, 0*TILESIZE, 4*TILESIZE, 5);
+                    newEnemy(enemies, tileManager, 1, 0*TILESIZE, 4*TILESIZE, 5);
                     wait = false;
                 }
                 else {
@@ -329,26 +340,16 @@ Enemy *isEnemy(EM *enemies) {
 void drawEnemies(EM *enemies) {
     SDL_Texture *texture;
 
-    for(int i = enemies->activeEnemies; i >= 0 ; i--) {
+    for (int i = enemies->activeEnemies - 1; i >= 0; i--) {
         if(!enemies->inGame[i].isDead) {
-            texture = enemies->inGame[i].texture[enemies->inGame[i].currentTexture];
+            texture = enemies->textures[enemies->inGame[i].currentTexture];
             SDL_Rect texture_rect = {enemies->inGame[i].x, enemies->inGame[i].y, TILESIZE, TILESIZE};
             SDL_RenderCopy(enemies->renderer, texture, NULL, &texture_rect); 
-
-            if(enemies->inGame[i].hp <= 2) {
-                texture = enemies->lowHPTexture;
-                SDL_Rect texture_rect = {enemies->inGame[i].x, enemies->inGame[i].y, TILESIZE, TILESIZE};
-                SDL_RenderCopy(enemies->renderer, texture, NULL, &texture_rect); 
-            }
         }
     }
 }
 
 void cleanupEnemies(EM *enemies) {
     for(int i = 0; i < 64; i++)
-        SDL_DestroyTexture(enemies->types[0].texture[i]);
-
-    for(int i = 0; i < enemies->activeEnemies; i++)
-        for(int j = 0; j < 64; j++)
-            SDL_DestroyTexture(enemies->inGame[i].texture[j]);
+        SDL_DestroyTexture(enemies->textures[i]);
 }
