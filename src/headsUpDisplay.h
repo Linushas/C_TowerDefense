@@ -9,6 +9,8 @@ enum{NO_HUD, NEW_TOWER_STATE, UPGRADE_STATE};
 
 typedef struct hud {
     int state;
+    unsigned int renderTime;
+    bool debug;
     int mouseX, mouseY;
     int money;
     SDL_Renderer* renderer;

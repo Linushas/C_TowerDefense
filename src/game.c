@@ -11,6 +11,8 @@ int gameLoop(SDL_Window* win) {
     SDL_Event event;
     int running = loadGame(win, renderer, &tileManager, &towers, &enemies, &hud);
     hud.money = 440;
+    hud.debug = false;
+    unsigned int time = SDL_GetTicks();
 
     // MAIN GAME LOOP
     while(running) {
@@ -18,6 +20,10 @@ int gameLoop(SDL_Window* win) {
             switch(event.type) {
                 case SDL_QUIT: 
                     running = false; 
+                    break;
+                case SDL_KEYDOWN: 
+                    if(event.key.keysym.sym == SDLK_o) 
+                        hud.debug = !hud.debug;
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if(hud.state == UPGRADE_STATE || hud.state == NEW_TOWER_STATE) {
@@ -41,6 +47,12 @@ int gameLoop(SDL_Window* win) {
         update(&tileManager, &towers, &enemies, &hud);
         render(&tileManager, &towers, &enemies, &hud);
 
+        if(hud.debug) {
+            unsigned int now = SDL_GetTicks();
+            hud.renderTime = now - time;
+            time = now;
+        }
+        
         SDL_Delay(1000/FPS);
     }
 

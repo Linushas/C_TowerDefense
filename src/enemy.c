@@ -227,7 +227,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
         }
     }
 
-    if((wait && ticks < 2*60) || (wait && !isAllDead)) {
+    if((wait && ticks < 4*60) || (wait && !isAllDead)) {
         ticks++;
         return;
     }
@@ -299,9 +299,9 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             break;
         case 5: 
             if(ticks > 120) {
-                if(enemies->activeEnemies < 20) {
+                if(enemies->activeEnemies < 60) {
                     ticks = 0;
-                    newEnemy(enemies, tileManager, 1, 0*TILESIZE, 4*TILESIZE, 4);
+                    newEnemy(enemies, tileManager, 1, 0*TILESIZE, 4*TILESIZE, 6);
                     wait = false;
                 }
                 else {

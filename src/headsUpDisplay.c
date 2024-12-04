@@ -81,7 +81,15 @@ void drawHUD(HUD *hud, TOWERS *towers, EM *enemies){
     renderText(hud, string, 20, 20, fontColor1);
 
     sprintf(string, "Round: %d", enemies->currentRound);
-    renderText(hud, string, 20, 50, fontColor1);
+    renderText(hud, string, 200, 20, fontColor1);
+
+    //sprintf(string, "Hearts: 3", );
+    renderText(hud, "Hearts: 3", 400, 20, fontColor1);
+
+    if(hud->debug) {
+        sprintf(string, "Render-time: %d ms", hud->renderTime);
+        renderText(hud, string, 600, 20, fontColor1);
+    }
 }
 
 void renderText(HUD* hud, char *str, int x, int y, SDL_Color textColor) {
