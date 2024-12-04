@@ -3,22 +3,14 @@
 #include "game.h"
 
 int gameLoop(GameModel *gm) { 
-    SDL_Renderer *renderer;
-    SDL_Event event;
-    TM tileManager;
-    TOWERS towers;
-    EM enemies;
-    HUD hud;
-    gm->renderer = renderer;
-    gm->event = &event;
-    gm->tileManager = &tileManager;
-    gm->towers = &towers;
-    gm->enemies = &enemies;
-    gm->hud = &hud;
-
+    SDL_Renderer *renderer; gm->renderer = renderer;
+    SDL_Event event; gm->event = &event;
+    TM tileManager; gm->tileManager = &tileManager;
+    TOWERS towers; gm->towers = &towers;
+    EM enemies; gm->enemies = &enemies;
+    HUD hud; gm->hud = &hud;
+    
     int running = loadGame(gm);
-    hud.money = 440;
-    hud.debug = false;
     unsigned int time = SDL_GetTicks();
 
     // MAIN GAME LOOP
@@ -152,6 +144,9 @@ int loadGame(GameModel *gm) {
         return false;
     } 
     printf("HUD initialized\n");
+
+    gm->hud->money = 440;
+    gm->hud->debug = false;
 
     return true;
 }
