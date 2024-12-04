@@ -80,7 +80,7 @@ void drawHUD(HUD *hud, TOWERS *towers, EM *enemies){
     sprintf(string, "$%d", hud->money);
     renderText(hud, string, 20, 20, fontColor1);
 
-    sprintf(string, "Wave: %d", enemies->currentWave);
+    sprintf(string, "Round: %d", enemies->currentRound);
     renderText(hud, string, 20, 50, fontColor1);
 }
 

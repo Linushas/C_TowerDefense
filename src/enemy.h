@@ -25,7 +25,7 @@ typedef struct enemy {
 typedef struct enemyManager {
     SDL_Texture *textures[64];
     Enemy inGame[200];
-    int currentWave;
+    int currentRound;
     int activeEnemies;
     SDL_Renderer* renderer;
 } EM;

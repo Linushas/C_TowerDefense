@@ -5,7 +5,7 @@ EM initializeEnemies(SDL_Renderer* renderer) {
     EM enemies;
     enemies.renderer = renderer;
     enemies.activeEnemies = 0;
-    enemies.currentWave = 1;
+    enemies.currentRound = 1;
     
     loadEnemies(&enemies);
 
@@ -227,19 +227,19 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
         }
     }
 
-    if((wait && ticks < 6*60) || (wait && !isAllDead)) {
+    if((wait && ticks < 2*60) || (wait && !isAllDead)) {
         ticks++;
         return;
     }
     if(nextRound) {
         ticks = 0;
         enemies->activeEnemies = 0;
-        (enemies->currentWave)++;
+        (enemies->currentRound)++;
         nextRound = false;
     }
     wait = false;
 
-    switch(enemies->currentWave) {
+    switch(enemies->currentRound) {
         case 1: 
             if(ticks > 140) {
                 if(enemies->activeEnemies < 10) {
@@ -286,6 +286,11 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
                     newEnemy(enemies, tileManager, 1, 0*TILESIZE, 4*TILESIZE, 3);
                     wait = false;
                 }
+                else if(enemies->activeEnemies >= 10 && enemies->activeEnemies < 30) {
+                    ticks = 0;
+                    newEnemy(enemies, tileManager, 0, 0*TILESIZE, 4*TILESIZE, 4);
+                    wait = false; 
+                }
                 else {
                     nextRound = true;
                     wait = true;
@@ -315,6 +320,7 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
                 else {
                     nextRound = true;
                     wait = true;
+                    printf("\n**************************\n \t\tYOU WIN!! \n**************************\n");
                 }
             }
             break;
