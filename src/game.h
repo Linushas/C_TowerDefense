@@ -10,6 +10,19 @@
 #define SCREEN_HEIGHT TILESIZE*MAP_ROWS
 #define FPS 60
 
+typedef struct gameModel {
+    SDL_Window *win;
+    SDL_Renderer *renderer;
+    TM *tileManager;
+    TOWERS *towers;
+    EM *ememies;
+    HUD *hud;
+    int state;
+    unsigned int renderTime;
+    bool debug;
+    int money;
+} GameModel;
+
 int gameLoop(SDL_Window* win);
 void update(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
 void render(TM *tileManager, TOWERS *towers, EM *enemies, HUD *hud);
