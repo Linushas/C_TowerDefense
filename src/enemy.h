@@ -10,13 +10,16 @@ typedef struct coord {
 } Coord;
 
 typedef struct enemy {
-    SDL_Texture *texture;
+    SDL_Texture *texture[64];
+    int currentTexture;
+    int lastHorizontalDirection;
     int x, y;
     int type;
     int level;
     int speed;
     int direction;
     int tilesTraveled;
+    int maxHP;
     int hp;
     bool isDead;
 } Enemy;

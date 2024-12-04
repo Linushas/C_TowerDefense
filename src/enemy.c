@@ -21,41 +21,81 @@ void newEnemy(EM *enemies, TM *tileManager, int x_pos, int y_pos, int speed) {
         return;
     }
 
-    enemies->inGame[enemies->activeEnemies].texture = enemies->types[0].texture;
+    enemies->inGame[enemies->activeEnemies] = enemies->types[0];
+    enemies->inGame[enemies->activeEnemies].currentTexture = 0;
     enemies->inGame[enemies->activeEnemies].type = 0;
     enemies->inGame[enemies->activeEnemies].isDead = false;
     enemies->inGame[enemies->activeEnemies].speed = speed;
     enemies->inGame[enemies->activeEnemies].level = 0;
     enemies->inGame[enemies->activeEnemies].direction = RIGHT;
+    enemies->inGame[enemies->activeEnemies].lastHorizontalDirection = RIGHT;
     enemies->inGame[enemies->activeEnemies].x = x_pos;
     enemies->inGame[enemies->activeEnemies].y = y_pos;
     enemies->inGame[enemies->activeEnemies].y = y_pos;
     enemies->inGame[enemies->activeEnemies].tilesTraveled = 0;
+    enemies->inGame[enemies->activeEnemies].maxHP = 4;
     enemies->inGame[enemies->activeEnemies].hp = 4;
 
     (enemies->activeEnemies)++;
 }
 
 int loadEnemies(EM *enemies) {
-    char *path1 = "res/images/enemy1.png";
-    char *path2 = "res/images/enemy1pop.png";
+    char *path = "res/images/snails.png";
 
-    enemies->types[0].texture = IMG_LoadTexture(enemies->renderer, path1);
-    if (!enemies->types[0].texture) {
+    SDL_Texture *sheet = IMG_LoadTexture(enemies->renderer, path);
+    if (!sheet) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
-    printf("%s loaded\n", path1);
+    printf("%s loaded\n", path);
 
-    enemies->lowHPTexture = IMG_LoadTexture(enemies->renderer, path2);
-    if (!enemies->lowHPTexture) {
-        printf("Failed to load texture: %s\n", IMG_GetError());
-        return false;
+    int rows = 4, cols = 16;
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int spriteIndex = i * cols + j;
+            if (spriteIndex >= 50) {
+                break;
+            }
+
+            SDL_Rect cropRect = {j * 32, i * 32, 32, 32};
+            enemies->types[0].texture[spriteIndex] = SDL_CreateTexture(
+                enemies->renderer,
+                SDL_PIXELFORMAT_RGBA8888,
+                SDL_TEXTUREACCESS_TARGET,
+                TILESIZE,
+                TILESIZE
+            );
+            if (!enemies->types[0].texture[spriteIndex]) {
+                printf("Failed to create sprite texture: %s\n", SDL_GetError());
+                SDL_DestroyTexture(sheet);
+                return false;
+            }
+            
+            SDL_SetRenderTarget(enemies->renderer, enemies->types[0].texture[spriteIndex]);
+            SDL_SetTextureBlendMode(enemies->types[0].texture[spriteIndex], SDL_BLENDMODE_BLEND);
+
+            if (SDL_RenderCopy(enemies->renderer, sheet, &cropRect, NULL) < 0) {
+                printf("Failed to render copy sprite: %s\n", SDL_GetError());
+                SDL_DestroyTexture(sheet);
+                return false;
+            }
+
+            SDL_SetRenderTarget(enemies->renderer, NULL);
+
+            if (!enemies->types[0].texture[spriteIndex]) {
+                printf("Texture creation failed at sprite %d: %s\n", spriteIndex, SDL_GetError());
+            }
+
+        }
     }
-    printf("%s loaded\n", path2);
+
+    SDL_DestroyTexture(sheet);
 }
 
 void updateEnemies(EM *enemies, TM *tileManager) {
+    static int ticks = 0;
+    
     for (int i = 0; i < enemies->activeEnemies; i++) {
         Enemy *enemy = &enemies->inGame[i];
 
@@ -108,22 +148,58 @@ void updateEnemies(EM *enemies, TM *tileManager) {
             }
         }
 
+        int hp = 0;
+        if( (float)((float)enemy->hp / (float)enemy-> maxHP) < 0.90 )
+            hp = 6;
+        if( (float)((float)enemy->hp / (float)enemy-> maxHP) < 0.50 )
+            hp = 12;
+
         switch (enemy->direction) {
             case UP:
+                if(enemy->lastHorizontalDirection == RIGHT)
+                    enemy->currentTexture = 3 + hp;
+                else enemy->currentTexture = 2 + hp;
+
                 enemy->y -= enemy->speed;
                 break;
             case DOWN:
+                if(ticks >= 30 && hp != 12) {
+                    if(enemy->lastHorizontalDirection == RIGHT)
+                        enemy->currentTexture = 5 + hp;
+                    else enemy->currentTexture = 4 + hp;
+                }
+                else {
+                    if(enemy->lastHorizontalDirection == RIGHT)
+                        enemy->currentTexture = 1 + hp;
+                    else enemy->currentTexture = 0 + hp;
+                }
+                
                 enemy->y += enemy->speed;
                 break;
             case LEFT:
+                enemy->lastHorizontalDirection = LEFT;
+
+                if(ticks >= 30 && hp != 12) 
+                    enemy->currentTexture = 4 + hp;
+                else enemy->currentTexture = 0 + hp;
+
                 enemy->x -= enemy->speed;
                 break;
             case RIGHT:
+                enemy->lastHorizontalDirection = RIGHT;
+
+                if(ticks >= 30 && hp != 12)
+                    enemy->currentTexture = 5 + hp;
+                else enemy->currentTexture = 1 + hp;
+
                 enemy->x += enemy->speed;
                 break;
         }
-    }
 
+        
+    }
+    if(ticks >= 36) ticks = 0;
+    ticks++;
     spawnEnemies(enemies, tileManager);
 }
 
@@ -253,9 +329,9 @@ Enemy *isEnemy(EM *enemies) {
 void drawEnemies(EM *enemies) {
     SDL_Texture *texture;
 
-    for(int i = 0; i < enemies->activeEnemies; i++) {
+    for(int i = enemies->activeEnemies; i >= 0 ; i--) {
         if(!enemies->inGame[i].isDead) {
-            texture = enemies->inGame[i].texture;
+            texture = enemies->inGame[i].texture[enemies->inGame[i].currentTexture];
             SDL_Rect texture_rect = {enemies->inGame[i].x, enemies->inGame[i].y, TILESIZE, TILESIZE};
             SDL_RenderCopy(enemies->renderer, texture, NULL, &texture_rect); 
 
@@ -269,8 +345,10 @@ void drawEnemies(EM *enemies) {
 }
 
 void cleanupEnemies(EM *enemies) {
-    SDL_DestroyTexture(enemies->types[0].texture);
+    for(int i = 0; i < 64; i++)
+        SDL_DestroyTexture(enemies->types[0].texture[i]);
 
     for(int i = 0; i < enemies->activeEnemies; i++)
-        SDL_DestroyTexture(enemies->inGame[i].texture);
+        for(int j = 0; j < 64; j++)
+            SDL_DestroyTexture(enemies->inGame[i].texture[j]);
 }

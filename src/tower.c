@@ -71,7 +71,7 @@ int loadTowers(TOWERS *towers) {
                 TILESIZE
             );
             if (!towers->types[0].texture[spriteIndex]) {
-                printf("Failed to create tile texture: %s\n", SDL_GetError());
+                printf("Failed to create sprite texture: %s\n", SDL_GetError());
                 SDL_DestroyTexture(sheet);
                 return false;
             }
@@ -80,7 +80,7 @@ int loadTowers(TOWERS *towers) {
             SDL_SetTextureBlendMode(towers->types[0].texture[spriteIndex], SDL_BLENDMODE_BLEND);
 
             if (SDL_RenderCopy(towers->renderer, sheet, &cropRect, NULL) < 0) {
-                printf("Failed to render copy tile: %s\n", SDL_GetError());
+                printf("Failed to render copy sprite: %s\n", SDL_GetError());
                 SDL_DestroyTexture(sheet);
                 return false;
             }
