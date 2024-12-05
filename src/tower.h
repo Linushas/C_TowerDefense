@@ -11,8 +11,6 @@ typedef struct projectile {
 } Projectile;
 
 typedef struct tower {
-    SDL_Texture *texture[20];
-    SDL_Texture *projTexture[10];
     int spriteState;
     char *name;
     int x, y;
@@ -31,6 +29,8 @@ typedef struct tower {
 } Tower;
 
 typedef struct towers {
+    SDL_Texture *textures[20];
+    SDL_Texture *projTextures[10];
     Tower types[10];
     Tower inGame[50];
     int selectedTowerIndex;

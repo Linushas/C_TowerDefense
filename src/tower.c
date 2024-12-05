@@ -63,21 +63,21 @@ int loadTowers(TOWERS *towers) {
             }
 
             SDL_Rect cropRect = {j * 32, i * 32, 32, 32};
-            towers->types[0].texture[spriteIndex] = SDL_CreateTexture(
+            towers->textures[spriteIndex] = SDL_CreateTexture(
                 towers->renderer,
                 SDL_PIXELFORMAT_RGBA8888,
                 SDL_TEXTUREACCESS_TARGET,
                 TILESIZE,
                 TILESIZE
             );
-            if (!towers->types[0].texture[spriteIndex]) {
+            if (!towers->textures[spriteIndex]) {
                 printf("Failed to create sprite texture: %s\n", SDL_GetError());
                 SDL_DestroyTexture(sheet);
                 return false;
             }
             
-            SDL_SetRenderTarget(towers->renderer, towers->types[0].texture[spriteIndex]);
-            SDL_SetTextureBlendMode(towers->types[0].texture[spriteIndex], SDL_BLENDMODE_BLEND);
+            SDL_SetRenderTarget(towers->renderer, towers->textures[spriteIndex]);
+            SDL_SetTextureBlendMode(towers->textures[spriteIndex], SDL_BLENDMODE_BLEND);
 
             if (SDL_RenderCopy(towers->renderer, sheet, &cropRect, NULL) < 0) {
                 printf("Failed to render copy sprite: %s\n", SDL_GetError());
@@ -87,7 +87,7 @@ int loadTowers(TOWERS *towers) {
 
             SDL_SetRenderTarget(towers->renderer, NULL);
 
-            if (!towers->types[0].texture[spriteIndex]) {
+            if (!towers->textures[spriteIndex]) {
                 printf("Texture creation failed at sprite %d: %s\n", spriteIndex, SDL_GetError());
             }
 
@@ -96,22 +96,22 @@ int loadTowers(TOWERS *towers) {
 
     SDL_DestroyTexture(sheet);
 
-    towers->types[0].projTexture[0] = IMG_LoadTexture(towers->renderer, pathProjectile);
-    if (!towers->types[0].projTexture[0]) {
+    towers->projTextures[0] = IMG_LoadTexture(towers->renderer, pathProjectile);
+    if (!towers->projTextures[0]) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
     printf("%s loaded\n", pathProjectile);
 
-    towers->types[0].projTexture[1] = IMG_LoadTexture(towers->renderer, pathProjectile2);
-    if (!towers->types[0].projTexture[1]) {
+    towers->projTextures[1] = IMG_LoadTexture(towers->renderer, pathProjectile2);
+    if (!towers->projTextures[1]) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
     printf("%s loaded\n", pathProjectile2);
     
-    towers->types[0].projTexture[2] = IMG_LoadTexture(towers->renderer, pathProjectile3);
-    if (!towers->types[0].projTexture[2]) {
+    towers->projTextures[2] = IMG_LoadTexture(towers->renderer, pathProjectile3);
+    if (!towers->projTextures[2]) {
         printf("Failed to load texture: %s\n", IMG_GetError());
         return false;
     }
@@ -229,7 +229,8 @@ void drawProjectiles(TOWERS *towers) {
     for(int i = 0; i < towers->activeTowers; i++) {
         for(int p = 0; p < towers->inGame[i].projIndex; p++) {
             if(towers->inGame[i].proj[p].enemiesHit == 0) {
-                texture = towers->inGame[i].projTexture[towers->inGame[i].currentProjTexture];
+                texture = towers->projTextures[towers->inGame[i].currentProjTexture];
+
                 SDL_Rect texture_rect = {(int)towers->inGame[i].proj[p].x, (int)towers->inGame[i].proj[p].y, TILESIZE, TILESIZE};
                 SDL_RenderCopyEx(towers->renderer, texture, NULL, &texture_rect, towers->inGame[i].proj[p].angle, NULL, SDL_FLIP_NONE);
             }
@@ -241,7 +242,7 @@ void drawTowers(TOWERS *towers) {
     SDL_Texture *texture;
 
     for(int i = 0; i < towers->activeTowers; i++) {
-        texture = towers->inGame[i].texture[towers->inGame[i].spriteState];
+        texture = towers->textures[towers->inGame[i].spriteState];
 
         SDL_Rect texture_rect = {towers->inGame[i].x*TILESIZE, towers->inGame[i].y*TILESIZE, TILESIZE, TILESIZE};
         SDL_RenderCopyEx(towers->renderer, texture, NULL, &texture_rect, towers->inGame[i].angle, NULL, SDL_FLIP_NONE);
@@ -258,17 +259,13 @@ int isTower(TOWERS *towers, int x, int y) {
 
 void cleanupTowers(TOWERS *towers) {
     for(int i = 0; i < 20; i++) {
-        if(towers->types[0].texture[i])
-            SDL_DestroyTexture(towers->types[0].texture[i]);
-        towers->types[0].texture[i] = NULL;
+        if(towers->textures[i])
+            SDL_DestroyTexture(towers->textures[i]);
+        towers->textures[i] = NULL;
     }
-    
-
-    for(int i = 0; i < 50; i++) {
-        for(int j = 0; j < 20; j++) {
-            if(towers->inGame[i].texture[j])
-                SDL_DestroyTexture(towers->inGame[i].texture[j]);
-            towers->inGame[i].texture[j] = NULL;
-        }
+    for(int i = 0; i < 10; i++) {
+        if(towers->projTextures[i])
+            SDL_DestroyTexture(towers->projTextures[i]);
+        towers->projTextures[i] = NULL;
     }
 }

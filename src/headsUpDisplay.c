@@ -41,7 +41,6 @@ void updateHUD(GameModel *gm){
             hud->state = NO_HUD;
         }
     }
-    
 }
 
 void drawHUD(GameModel *gm){
@@ -60,7 +59,7 @@ void drawHUD(GameModel *gm){
         SDL_SetRenderDrawColor(hud->renderer, 0, 0, 0, 200);
         SDL_RenderFillRect(hud->renderer, &rect);
         
-        texture = towers->types[0].texture[0];
+        texture = towers->textures[0];
         SDL_Rect texture_rect = {SCREEN_WIDTH-180, 50, TILESIZE, TILESIZE};
         SDL_RenderCopy(hud->renderer, texture, NULL, &texture_rect); 
 
