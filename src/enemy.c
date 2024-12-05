@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "enemy.h"
+#include "game.h"
 
 EM initializeEnemies(SDL_Renderer* renderer) {
     EM enemies;
@@ -104,7 +105,7 @@ int loadEnemies(EM *enemies) {
     SDL_DestroyTexture(sheet);
 }
 
-void updateEnemies(EM *enemies, TM *tileManager) {
+void updateEnemies(EM *enemies, TM *tileManager, GameModel *gm) {
     static int ticks = 0;
     
     for (int i = 0; i < enemies->activeEnemies; i++) {
@@ -207,7 +208,10 @@ void updateEnemies(EM *enemies, TM *tileManager) {
                 break;
         }
 
-        
+        if(enemy->x / TILESIZE == 16 && enemy->y / TILESIZE == 1 && enemy->isDead == false) {
+            (gm->hearts)--;
+            enemy->isDead = true;
+        }
     }
     if(ticks >= 36) ticks = 0;
     ticks++;
@@ -298,10 +302,11 @@ void spawnEnemies(EM *enemies, TM *tileManager) {
             }
             break;
         case 5: 
-            if(ticks > 120) {
-                if(enemies->activeEnemies < 60) {
+            if(ticks > 100) {
+                if(enemies->activeEnemies < 30) {
                     ticks = 0;
                     newEnemy(enemies, tileManager, 1, 0*TILESIZE, 4*TILESIZE, 6);
+                    newEnemy(enemies, tileManager, 0, 0*TILESIZE, 4*TILESIZE, 9);
                     wait = false;
                 }
                 else {

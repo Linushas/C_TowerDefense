@@ -10,7 +10,7 @@ HUD initializeHUD(SDL_Renderer* renderer){
     return hud;
 }
 
-void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager){
+void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager, GameModel *gm){
     if(hud->state == NEW_TOWER_STATE){
         if(hud->mouseX > SCREEN_WIDTH-180 && hud->mouseX < SCREEN_WIDTH-180+TILESIZE &&
             hud->mouseY > 50 && hud->mouseY < 50+TILESIZE && hud->money >= 200) {
@@ -23,7 +23,7 @@ void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager){
         }
     }
     else if(hud->state == UPGRADE_STATE){
-        if(hud->mouseX > SCREEN_WIDTH-180 && hud->mouseX < (SCREEN_WIDTH-180)+(TILESIZE*2) &&
+        if(hud->mouseX > SCREEN_WIDTH-180 && hud->mouseX < (SCREEN_WIDTH-180)+(TILESIZE*2 + 20) &&
             hud->mouseY > 100 && hud->mouseY < 100+40 && hud->money >= towers->inGame[towers->selectedTowerIndex].upgradePrice) {
                 if(towers->inGame[towers->selectedTowerIndex].level < 5) {
                     hud->money -= towers->inGame[towers->selectedTowerIndex].upgradePrice;
@@ -39,7 +39,7 @@ void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager){
     
 }
 
-void drawHUD(HUD *hud, TOWERS *towers, EM *enemies){
+void drawHUD(HUD *hud, TOWERS *towers, EM *enemies, GameModel *gm){
     SDL_Texture *texture;
     SDL_Color fontColor1 = {255, 255, 255, 255};
     SDL_Color fontColor2 = {255, 0, 0, 255};
@@ -71,8 +71,8 @@ void drawHUD(HUD *hud, TOWERS *towers, EM *enemies){
             sprintf(lvl, "Level: %d", towers->inGame[towers->selectedTowerIndex].level);
             renderText(hud, lvl, SCREEN_WIDTH-180, 70, fontColor1);
 
-            sprintf(lvl, "Upgrade %d", towers->inGame[towers->selectedTowerIndex].upgradePrice);
-            createButton(hud, lvl, SCREEN_WIDTH-180, 100, TILESIZE*2, 40, fontColor3, fontColor1);
+            sprintf(lvl, "Upgrade: $%d", towers->inGame[towers->selectedTowerIndex].upgradePrice);
+            createButton(hud, lvl, SCREEN_WIDTH-180, 100, TILESIZE*2 + 20, 40, fontColor3, fontColor1);
         }
     }
 
@@ -83,8 +83,8 @@ void drawHUD(HUD *hud, TOWERS *towers, EM *enemies){
     sprintf(string, "Round: %d", enemies->currentRound);
     renderText(hud, string, 200, 20, fontColor1);
 
-    //sprintf(string, "Hearts: 3", );
-    renderText(hud, "Hearts: 3", 400, 20, fontColor1);
+    sprintf(string, "Hearts: %d", gm->hearts);
+    renderText(hud, string, 400, 20, fontColor1);
 
     if(hud->debug) {
         sprintf(string, "Render-time: %d ms", hud->renderTime);

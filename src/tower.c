@@ -198,21 +198,21 @@ void upgradeTower(Tower *tower) {
             tower->reloadDelay = 30;
             tower->damage = 1;
             tower->currentProjTexture = 0;
-            tower->upgradePrice = 130;
+            tower->upgradePrice = 180;
             break;
         case 3: 
             tower->projSpeed = 120;
             tower->reloadDelay = 30;
             tower->damage = 2;
             tower->currentProjTexture = 1;
-            tower->upgradePrice = 180;
+            tower->upgradePrice = 340;
             break;
         case 4: 
             tower->projSpeed = 160;
             tower->reloadDelay = 25;
             tower->damage = 2;
             tower->currentProjTexture = 1;
-            tower->upgradePrice = 280;
+            tower->upgradePrice = 550;
             break;
         case 5: 
             tower->projSpeed = 500;

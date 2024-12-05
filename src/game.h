@@ -26,6 +26,7 @@ typedef struct gameModel {
     unsigned int renderTime;
     bool debug;
     int money;
+    int hearts;
 } GameModel;
 
 int gameLoop(GameModel *gm);

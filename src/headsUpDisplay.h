@@ -24,10 +24,12 @@ typedef struct button {
     SDL_Color textColor;
 } Button;
 
+typedef struct gameModel GameModel;
+
 HUD initializeHUD(SDL_Renderer* renderer);
 void cleanupHUD(HUD *hud);
-void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager);
-void drawHUD(HUD *hud, TOWERS *towers, EM *enemies);
+void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager, GameModel *gm);
+void drawHUD(HUD *hud, TOWERS *towers, EM *enemies, GameModel *gm);
 void renderText(HUD* hud, char *str, int x, int y, SDL_Color textColor);
 Button createButton(HUD* hud, char *text, int x, int y, int width, int height, SDL_Color bgColor, SDL_Color textColor);
 

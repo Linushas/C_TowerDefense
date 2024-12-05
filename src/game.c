@@ -26,7 +26,7 @@ int gameLoop(GameModel *gm) {
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if(hud.state == UPGRADE_STATE || hud.state == NEW_TOWER_STATE) {
-                        updateHUD(&hud, &towers, &tileManager);
+                        updateHUD(&hud, &towers, &tileManager, gm);
                     }
                     else {
                         towers.selectedTowerIndex = isTower(&towers, tileManager.selectedCol, tileManager.selectedRow);
@@ -71,7 +71,7 @@ void update(GameModel *gm) {
     }
 
     updateTowers(gm->towers, gm->enemies);
-    updateEnemies(gm->enemies, gm->tileManager);
+    updateEnemies(gm->enemies, gm->tileManager, gm);
 
     for(int enemy = 0; enemy < gm->enemies->activeEnemies; enemy++) {
         for(int i = 0; i < gm->towers->activeTowers; i++) {
@@ -91,9 +91,13 @@ void update(GameModel *gm) {
                     }
                 }
             }
-            
         }
     }
+
+    if(gm->hearts <= 0) {
+        printf("GAME OVER! YOU LOST\n");
+        cleanup(gm);
+    } 
 }
 
 void render(GameModel *gm) {
@@ -104,7 +108,7 @@ SDL_RenderClear(gm->renderer);
     drawProjectiles(gm->towers);
     drawTowers(gm->towers);
     drawEnemies(gm->enemies);
-    drawHUD(gm->hud, gm->towers, gm->enemies);
+    drawHUD(gm->hud, gm->towers, gm->enemies, gm);
 
     SDL_RenderPresent(gm->renderer);
 }
@@ -147,6 +151,7 @@ int loadGame(GameModel *gm) {
 
     gm->hud->money = 440;
     gm->hud->debug = false;
+    gm->hearts = 3;
 
     return true;
 }
