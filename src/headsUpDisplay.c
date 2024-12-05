@@ -10,7 +10,12 @@ HUD initializeHUD(SDL_Renderer* renderer){
     return hud;
 }
 
-void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager, GameModel *gm){
+void updateHUD(GameModel *gm){
+    TOWERS *towers = gm->towers;
+    TM *tileManager = gm->tileManager;
+    EM *enemies = gm->enemies;
+    HUD *hud = gm->hud;
+
     if(hud->state == NEW_TOWER_STATE){
         if(hud->mouseX > SCREEN_WIDTH-180 && hud->mouseX < SCREEN_WIDTH-180+TILESIZE &&
             hud->mouseY > 50 && hud->mouseY < 50+TILESIZE && hud->money >= 200) {
@@ -39,11 +44,16 @@ void updateHUD(HUD *hud, TOWERS *towers, TM *tileManager, GameModel *gm){
     
 }
 
-void drawHUD(HUD *hud, TOWERS *towers, EM *enemies, GameModel *gm){
+void drawHUD(GameModel *gm){
+    TOWERS *towers = gm->towers;
+    TM *tileManager = gm->tileManager;
+    EM *enemies = gm->enemies;
+    HUD *hud = gm->hud;
+
     SDL_Texture *texture;
-    SDL_Color fontColor1 = {255, 255, 255, 255};
-    SDL_Color fontColor2 = {255, 0, 0, 255};
-    SDL_Color fontColor3 = {0, 0, 0, 255};
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Color red = {255, 0, 0, 255};
+    SDL_Color black = {0, 0, 0, 255};
 
     if(hud->state == NEW_TOWER_STATE) {
         SDL_Rect rect = {SCREEN_WIDTH-200, 40, 200, SCREEN_HEIGHT-80};
@@ -55,8 +65,8 @@ void drawHUD(HUD *hud, TOWERS *towers, EM *enemies, GameModel *gm){
         SDL_RenderCopy(hud->renderer, texture, NULL, &texture_rect); 
 
         if(hud->money < 200)
-            renderText(hud, "$200", SCREEN_WIDTH-180, 70, fontColor2);
-        else renderText(hud, "$200", SCREEN_WIDTH-180, 70, fontColor1);
+            renderText(hud, "$200", SCREEN_WIDTH-180, 70, red);
+        else renderText(hud, "$200", SCREEN_WIDTH-180, 70, white);
     }
     else if(hud->state == UPGRADE_STATE) {
         SDL_Rect rect = {SCREEN_WIDTH-200, 40, 200, SCREEN_HEIGHT-80};
@@ -65,30 +75,30 @@ void drawHUD(HUD *hud, TOWERS *towers, EM *enemies, GameModel *gm){
 
         char lvl[60];
         if(towers->inGame[towers->selectedTowerIndex].level == 5) {
-            renderText(hud, "Level: MAX", SCREEN_WIDTH-180, 70, fontColor1);
+            renderText(hud, "Level: MAX", SCREEN_WIDTH-180, 70, white);
         }
         else {
             sprintf(lvl, "Level: %d", towers->inGame[towers->selectedTowerIndex].level);
-            renderText(hud, lvl, SCREEN_WIDTH-180, 70, fontColor1);
+            renderText(hud, lvl, SCREEN_WIDTH-180, 70, white);
 
             sprintf(lvl, "Upgrade: $%d", towers->inGame[towers->selectedTowerIndex].upgradePrice);
-            createButton(hud, lvl, SCREEN_WIDTH-180, 100, TILESIZE*2 + 20, 40, fontColor3, fontColor1);
+            createButton(hud, lvl, SCREEN_WIDTH-180, 100, TILESIZE*2 + 20, 40, black, white);
         }
     }
 
     char string[60];
     sprintf(string, "$%d", hud->money);
-    renderText(hud, string, 20, 20, fontColor1);
+    renderText(hud, string, 20, 20, white);
 
     sprintf(string, "Round: %d", enemies->currentRound);
-    renderText(hud, string, 200, 20, fontColor1);
+    renderText(hud, string, 200, 20, white);
 
     sprintf(string, "Hearts: %d", gm->hearts);
-    renderText(hud, string, 400, 20, fontColor1);
+    renderText(hud, string, 400, 20, white);
 
     if(hud->debug) {
         sprintf(string, "Render-time: %d ms", hud->renderTime);
-        renderText(hud, string, 600, 20, fontColor1);
+        renderText(hud, string, 600, 20, white);
     }
 }
 
@@ -120,5 +130,8 @@ Button createButton(HUD* hud, char *text, int x, int y, int width, int height, S
 }
 
 void cleanupHUD(HUD *hud){
-
+    if (hud->font != NULL) {
+        TTF_CloseFont(hud->font);
+        hud->font = NULL;
+    }
 }

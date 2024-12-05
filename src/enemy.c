@@ -105,11 +105,12 @@ int loadEnemies(EM *enemies) {
     SDL_DestroyTexture(sheet);
 }
 
-void updateEnemies(EM *enemies, TM *tileManager, GameModel *gm) {
+void updateEnemies(GameModel *gm) {
     static int ticks = 0;
+    TM *tileManager = gm->tileManager;
     
-    for (int i = 0; i < enemies->activeEnemies; i++) {
-        Enemy *enemy = &enemies->inGame[i];
+    for (int i = 0; i < gm->enemies->activeEnemies; i++) {
+        Enemy *enemy = &gm->enemies->inGame[i];
 
         int centerX = (enemy->x + TILESIZE / 2) / TILESIZE;
         int centerY = (enemy->y + TILESIZE / 2) / TILESIZE;
@@ -215,7 +216,7 @@ void updateEnemies(EM *enemies, TM *tileManager, GameModel *gm) {
     }
     if(ticks >= 36) ticks = 0;
     ticks++;
-    spawnEnemies(enemies, tileManager);
+    spawnEnemies(gm->enemies, gm->tileManager);
 }
 
 void spawnEnemies(EM *enemies, TM *tileManager) {
@@ -361,6 +362,10 @@ void drawEnemies(EM *enemies) {
 }
 
 void cleanupEnemies(EM *enemies) {
-    for(int i = 0; i < 64; i++)
-        SDL_DestroyTexture(enemies->textures[i]);
+    for(int i = 0; i < 64; i++) {
+        if (enemies->textures[i]) {
+            SDL_DestroyTexture(enemies->textures[i]);
+            enemies->textures[i] = NULL;
+        }
+    }
 }

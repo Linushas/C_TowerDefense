@@ -36,7 +36,7 @@ EM initializeEnemies(SDL_Renderer* renderer);
 void newEnemy(EM *enemies, TM *tileManager, int type, int x_pos, int y_pos, int speed);
 void spawnEnemies(EM *enemies, TM *tileManager);
 int loadEnemies(EM *enemies);
-void updateEnemies(EM *enemies, TM *tileManager, GameModel *gm);
+void updateEnemies(GameModel *gm);
 Enemy *isEnemy(EM *enemies);
 void drawEnemies(EM *enemies);
 void cleanupEnemies(EM *enemies);

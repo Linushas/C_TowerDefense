@@ -257,8 +257,18 @@ int isTower(TOWERS *towers, int x, int y) {
 }
 
 void cleanupTowers(TOWERS *towers) {
-    SDL_DestroyTexture(towers->types[0].texture[0]);
+    for(int i = 0; i < 20; i++) {
+        if(towers->types[0].texture[i])
+            SDL_DestroyTexture(towers->types[0].texture[i]);
+        towers->types[0].texture[i] = NULL;
+    }
+    
 
-    for(int i = 0; i < towers->activeTowers; i++)
-        SDL_DestroyTexture(towers->inGame[i].texture[0]);
+    for(int i = 0; i < 50; i++) {
+        for(int j = 0; j < 20; j++) {
+            if(towers->inGame[i].texture[j])
+                SDL_DestroyTexture(towers->inGame[i].texture[j]);
+            towers->inGame[i].texture[j] = NULL;
+        }
+    }
 }

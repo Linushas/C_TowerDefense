@@ -26,7 +26,7 @@ int gameLoop(GameModel *gm) {
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if(hud.state == UPGRADE_STATE || hud.state == NEW_TOWER_STATE) {
-                        updateHUD(&hud, &towers, &tileManager, gm);
+                        updateHUD(gm);
                     }
                     else {
                         towers.selectedTowerIndex = isTower(&towers, tileManager.selectedCol, tileManager.selectedRow);
@@ -71,7 +71,7 @@ void update(GameModel *gm) {
     }
 
     updateTowers(gm->towers, gm->enemies);
-    updateEnemies(gm->enemies, gm->tileManager, gm);
+    updateEnemies(gm);
 
     for(int enemy = 0; enemy < gm->enemies->activeEnemies; enemy++) {
         for(int i = 0; i < gm->towers->activeTowers; i++) {
@@ -108,7 +108,7 @@ SDL_RenderClear(gm->renderer);
     drawProjectiles(gm->towers);
     drawTowers(gm->towers);
     drawEnemies(gm->enemies);
-    drawHUD(gm->hud, gm->towers, gm->enemies, gm);
+    drawHUD(gm);
 
     SDL_RenderPresent(gm->renderer);
 }
@@ -158,13 +158,25 @@ int loadGame(GameModel *gm) {
 
 void cleanup(GameModel *gm){
     printf("cleaning up...\n");
+
     cleanupTiles(gm->tileManager);
+    printf("tiles destroyed\n");
+
     cleanupTowers(gm->towers);
+    printf("towers destroyed\n");
+
     cleanupEnemies(gm->enemies);
+    printf("enemies destroyed\n");
+
     cleanupHUD(gm->hud);
+    printf("hud destroyed\n");
+
     SDL_DestroyRenderer(gm->renderer);
+    printf("renderer destroyed\n");
+
     IMG_Quit();
     SDL_DestroyWindow(gm->win);
+    printf("window destroyed\n");
     SDL_Quit();
     printf("Done!\n");
 }

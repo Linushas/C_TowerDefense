@@ -140,5 +140,10 @@ void drawTiles(TM *tileManager) {
 }
 
 void cleanupTiles(TM *tileManager) {
-    SDL_DestroyTexture(tileManager->tiles[0].texture);
+    for(int i = 0; i < 50; i++) {
+        if(tileManager->tiles[i].texture)
+            SDL_DestroyTexture(tileManager->tiles[i].texture);
+        tileManager->tiles[i].texture = NULL;
+    }
+    
 }
