@@ -3,6 +3,7 @@
 #include "game.h"
 
 int gameLoop(GameModel *gm) { 
+    // use malloc?
     SDL_Renderer *renderer; gm->renderer = renderer;
     SDL_Event event; gm->event = &event;
     TM tileManager; gm->tileManager = &tileManager;
